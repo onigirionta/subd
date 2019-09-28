@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+	<nav class="navbar navbar-expand navbar-dark bg-dark navbar-fixed-top"  role="tablist">
+		<div class="container collapse navbar-collapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="navbar-item">
+					<a href="#trades" class="nav-link" id="trades-tab" data-toggle="tab" role="tab" aria-controls="trades" aria-selected="true">Торги</a>
+				</li>
+				<li class="navbar-item">
+					<a href="#futures" class="nav-link" id="futures-tab" data-toggle="tab" role="tab" aria-controls="futures">Фьючерсы</a>
+				</li>
+				<li class="navbar-item">
+					<a href="#market" class="nav-link" id="market-tab" data-toggle="tab" role="tab" aria-controls="market">Рынок</a>
+				</li>
+				<li class="navbar-item">
+					<a href="#report" class="nav-link" id="report-tab" data-toggle="tab" role="tab" aria-controls="report">Отчет</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<main role="main" class="container" style="padding: 1em">
+		<div class="tab-content">
+			<div class="tab-pane show active" id="trades" role="tabpanel" aria-labelledby="trades-tab">
+				<table id="zb" class="display">
+					<thead>
+						<tr>
+							<th>Имя</th>
+							<th>Код фьючерса</th>
+							<th>Дата торгов</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			<div class="tab-pane" id="futures" role="tabpanel" aria-labelledby="futures-tab">futures</div>
+			<div class="tab-pane" id="market" role="tabpanel" aria-labelledby="market-tab">market</div>
+			<div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">report</div>
+		</div>
+	</main>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function () {
+		    $('#zb').DataTable({
+		    	"language": {
+                	"url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+                }
+            });
+		});
+	</script>
+</body>
+</html>
