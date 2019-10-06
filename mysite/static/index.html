@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style type="text/css">
-        .collapsing {
-            -webkit-transition: none;
-            transition: none;
-            display: none;
-        }
-        .dataTables_filter {
-            display: none;
-        }
-    </style>
+    .collapsing {
+        -webkit-transition: none;
+        transition: none;
+        display: none;
+    }
+    .dataTables_filter {
+        display: none;
+    }
+</style>
 </head>
 <body>
     <nav class="navbar navbar-expand navbar-fixed-top"  role="tablist">
@@ -37,12 +38,13 @@
     <main role="main" class="container">
         <div class="tab-content">
             <div class="tab-pane show active" id="futures" role="tabpanel" aria-labelledby="futures-tab">
+                <!--
                 <div class="card">
                     <div class="card-header" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Фильтры</div>
                     <div class="card-body collapse show" id="collapseOne">
                         <div>
                             <label for="futures-name-filter">Фьючерс:</label>
-                            <input type="text" id="futures-name-filter" />
+                            
                         </div>
                         <div>
                             <label for="futures-code-filter">Код серии:</label>
@@ -56,6 +58,20 @@
                         </div>
                     </div>
                 </div>
+                -->
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
+                    Добавить новую запись
+                </button>
+
+                <button type="button" class="btn" data-toggle="modal" id="futures-edit-button" data-target="#futuresEditModal">
+                    Редактировать запись
+                </button>
+
+                <button type="button" class="btn btn-danger" data-toggle="modal" id="futures-delete-button" data-target="#futuresDeleteModal">
+                    Удалить выбранную запись
+                </button>
+
                 <div style="margin: 1em">
                     <table id="futures-table" class="display">
                         <thead>
@@ -67,7 +83,110 @@
                         </thead>
                         <tbody>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <input type="text" id="futures-name-filter" placeholder="Фьючерс" />
+                                </th>
+                                <th>
+                                    <input type="text" id="futures-code-filter" placeholder="Код серии" />
+                                </th>
+                                <th>
+                                    <label for="futures-date-filter-from">от</label>
+                                    <input type="date" id="futures-date-filter-from"/>
+                                    <label for="futures-date-filter-to">до</label>
+                                    <input type="date" id="futures-date-filter-to"/>
+                                </th>
+                            </tr>
+                        </tfoot>
                     </table>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal" id="futuresDeleteModal" tabindex="-1" role="dialog" aria-labelledby="futuresDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="futuresModalLabel">Удаление фьючерса</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Вы уверены, что хотите удалить фьючерс?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="futures-delete-button">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal" id="futuresCreateModal" tabindex="-1" role="dialog" aria-labelledby="futuresCreateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="futuresCreateModalLabel">Данные фьючерса</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="futures-create-name-input" class="col-form-label">Фьючерс:</label>
+                                    <input type="text" class="form-control" id="futures-create-name-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="futures-create-code-input" class="col-form-label">Код серии:</label>
+                                    <input type="text" class="form-control" id="futures-create-code-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="futures-create-date-input" class="col-form-label">Дата исполнения:</label>
+                                    <input type="text" class="form-control" id="futures-create-date-input">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="futures-create-ok-button">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal -->
+                <div class="modal" id="futuresEditModal" tabindex="-1" role="dialog" aria-labelledby="futuresEditModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="futuresEditModalLabel">Редактирование фьючерса</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id="futures-edit-original-name" />
+                                <div class="form-group">
+                                    <label for="futures-edit-name-input" class="col-form-label">Фьючерс:</label>
+                                    <input type="text" class="form-control" id="futures-edit-name-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="futures-edit-code-input" class="col-form-label">Код серии:</label>
+                                    <input type="text" class="form-control" id="futures-edit-code-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="futures-edit-date-input" class="col-form-label">Дата исполнения:</label>
+                                    <input type="text" class="form-control" id="futures-edit-date-input">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="futures-edit-ok-button">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane show" id="trades" role="tabpanel" aria-labelledby="trades-tab">
@@ -81,6 +200,7 @@
                             <th>Минимальная цена*</th>
                             <th>Максимальная цена*</th>
                             <th>Число проданных</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -96,9 +216,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    
+
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -109,7 +230,7 @@
                 "scrollY":         "70vh",
                 "scrollCollapse": true,
                 "paging": false,
-                
+                "select": "single",
 
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
@@ -119,14 +240,79 @@
                 // "searching": false,
                 "ajax": "/polls/futures",
                 "columns": [
-                    { "data": "pk" },
-                    { "data": "fields.base" },
-                    {
-                        "data": "fields.exec_date",
-                        "type": "date"
-                    },
+                {
+                    "data": "pk"
+                },
+                { 
+                    "data": "fields.base"
+                },
+                {
+                    "data": "fields.exec_date",
+                    "type": "date"
+                },
                 ]
+                });
+
+            $("#futures-create-ok-button").click(function (e) {
+                var name = $("#futures-create-name-input").val();
+                var code = $("#futures-create-code-input").val();
+                var date = $("#futures-create-date-input").val();
+                var request = {
+                    "name" : name,
+                    "code" : code,
+                    "date" : date
+                };
+                $.post(
+                    "/polls/futures",
+                    JSON.stringify(request),
+                    function (data, status, jq) {
+                        $("#futuresModal").modal('hide');
+                        futuresTable.ajax.reload();
+                    });
             });
+
+            $("#futures-delete-button").click(function (e) {
+                var td = $("#futures-table tr.selected td:first-child()");
+                $.ajax({
+                    "method": "delete",
+                    "url": "/polls/futures/" + td.text(),
+                    "success": function() {
+                        $("#futuresDeleteModal").modal('hide');
+                        futuresTable.ajax.reload();
+                    }
+                });
+            });
+
+            $("#futures-edit-button").click(function (e) {
+                var td = $("#futures-table tr.selected td");
+                var name = td[0].innerText;
+                $("#futures-edit-name-input").val(name);
+                $("#futures-edit-original-name").val(name);
+                $("#futures-edit-code-input").val(td[1].innerText);
+                $("#futures-edit-date-input").val(td[2].innerText);
+            });
+
+            $("#futures-edit-ok-button").click(function (e) {
+                var originalName = $("#futures-edit-original-name").val();
+                var name = $("#futures-edit-name-input").val();
+                var code = $("#futures-edit-code-input").val();
+                var date = $("#futures-edit-date-input").val();
+                var request = {
+                    "name" : name,
+                    "code" : code,
+                    "date" : date
+                };
+                $.ajax({
+                    "method": "put",
+                    "url": "/polls/futures/" + originalName,
+                    "data": JSON.stringify(request),
+                    "success": function() {
+                        $("#futuresDeleteModal").modal('hide');
+                        futuresTable.ajax.reload();
+                    }
+                });
+            });
+
 
             var attachTextFilter = function (filterId, table, columnIndex) {
                 var filter = $('#' + filterId);
@@ -137,7 +323,7 @@
                     function(settings, data, dataIndex) {
                         return (data[columnIndex] || "").includes(filter.val());
                     }
-                );
+                    );
                 return filter;
             };
 
@@ -162,7 +348,7 @@
 
                         return true;
                     }
-                );
+                    );
             };
 
             var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);
@@ -183,46 +369,46 @@
                 "searching": false,
                 "ajax": "/polls/trades",
                 "columns": [
-                    { "data": "pk" },
-                    {
-                        "data": "fields.torg_date",
-                        "type": "date"
-                    },
-                    {
-                        "data": "fields.day_end",
-                        "type": "date"
-                    },
-                    {
-                        "data": "fields.quotation",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.min_quot",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.max_quot",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.num_contr",
-                        "className": "dt-right"
-                    },
+                { "data": "pk" },
+                {
+                    "data": "fields.torg_date",
+                    "type": "date"
+                },
+                {
+                    "data": "fields.day_end",
+                    "type": "date"
+                },
+                {
+                    "data": "fields.quotation",
+                    "className": "dt-right"
+                },
+                {
+                    "data": "fields.min_quot",
+                    "className": "dt-right"
+                },
+                {
+                    "data": "fields.max_quot",
+                    "className": "dt-right"
+                },
+                {
+                    "data": "fields.num_contr",
+                    "className": "dt-right"
+                },
                 ]
             });
         });
 
-        $(function(){
-            var hash = window.location.hash;
-            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+$(function(){
+    var hash = window.location.hash;
+    hash && $('ul.nav a[href="' + hash + '"]').tab('show');
 
-            $('.nav-pills a').click(function (e) {
-                $(this).tab('show');
-                var scrollmem = $('body').scrollTop() || $('html').scrollTop();
-                window.location.hash = this.hash;
-                $('html,body').scrollTop(scrollmem);
-            });
-        });
-    </script>
+    $('.nav-pills a').click(function (e) {
+        $(this).tab('show');
+        var scrollmem = $('body').scrollTop() || $('html').scrollTop();
+        window.location.hash = this.hash;
+        $('html,body').scrollTop(scrollmem);
+    });
+});
+</script>
 </body>
 </html>
