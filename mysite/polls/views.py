@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from django.shortcuts import render
 from django.core.serializers import serialize
@@ -45,28 +46,31 @@ def trades(request):
         name = body['name']
         torg_date = datetime.strptime(body['torg_date'], '%Y-%m-%d')
         day_end = datetime.strptime(body['day_end'], '%Y-%m-%d')        
-        quotation = body['quotation']
-        max_quot = body['max_quot']
-        min_quot = body['min_quot']
-        num_contr = body['num_contr']
+        quotation = Decimal(body['quotation'])
+        max_quot = Decimal(body['max_quot'])
+        min_quot = Decimal(body['min_quot'])
+        num_contr = int(body['num_contr'])
         trades = Trades(name=name, torg_date=torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
         trades.save()
         return HttpResponse('trade created')
     else:
         pass  # TODO: error
 
-def modify_trades(request, name):
-    if request.method == 'DELETE':
-        Trades.objects.filter(name=name, torg_date=code).delete()
+def modify_trades(request, torg_date, name):
+    torg_date = datetime.strptime(torg_date, '%Y-%m-%d')
+
+    if request.method == 'DELETE':    
+        Trades.objects.filter(name=name, torg_date=torg_date).delete()
         return HttpResponse('trade deleted')
+    
     elif request.method == 'PUT':
         body = json.load(request)
-        name = body['name']
-        torg_date = datetime.strptime(body['torg_date'], '%Y-%m-%d')
+        new_name = body['name']
+        new_torg_date = datetime.strptime(body['torg_date'], '%Y-%m-%d')
         day_end = datetime.strptime(body['day_end'], '%Y-%m-%d')        
-        quotation = body['quotation']
-        max_quot = body['max_quot']
-        min_quot = body['min_quot']
-        num_contr = body['num_contr']
-        Trades.objects.filter(name=name, torg_date=code).update(name=name, torg_date=torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
+        quotation = Decimal(body['quotation'])
+        max_quot = Decimal(body['max_quot'])
+        min_quot = Decimal(body['min_quot'])
+        num_contr = int(body['num_contr'])
+        Trades.objects.filter(name=name, torg_date=torg_date).update(name=new_name, torg_date=new_torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
         return HttpResponse('trade updated')

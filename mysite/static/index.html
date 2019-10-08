@@ -237,7 +237,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
-                                <button type="button" class="btn btn-primary" id="trades-delete-button">Удалить</button>
+                                <button type="button" class="btn btn-primary" id="trades-delete-ok-button">Удалить</button>
                             </div>
                         </div>
                     </div>
@@ -304,6 +304,7 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id="trades-edit-original-name" />
+                                <input type="hidden" id="trades-edit-original-torg-date" />
                                 <div class="form-group">
                                     <label for="trades-edit-name-input" class="col-form-label">Фьючерс:</label>
                                     <input type="text" class="form-control" id="trades-edit-name-input">
@@ -325,7 +326,7 @@
                                     <input type="text" class="form-control" id="trades-edit-max-quot-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-edit-min-quot-input" class="col-form-label">Максимальная цена:</label>
+                                    <label for="trades-edit-min-quot-input" class="col-form-label">Минимальная цена:</label>
                                     <input type="text" class="form-control" id="trades-edit-min-quot-input">
                                 </div>
                                 <div class="form-group">
@@ -335,7 +336,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
-                                <button type="button" class="btn btn-primary" id="futures-edit-ok-button">Сохранить</button>
+                                <button type="button" class="btn btn-primary" id="trades-edit-ok-button">Сохранить</button>
                             </div>
                         </div>
                     </div>
@@ -374,19 +375,62 @@
                 // "searching": false,
                 "ajax": "/polls/futures",
                 "columns": [
-                {
-                    "data": "pk"
-                },
-                { 
-                    "data": "fields.base"
-                },
-                {
-                    "data": "fields.exec_date",
-                    "type": "date"
-                },
+                    {
+                        "data": "pk"
+                    },
+                    { 
+                        "data": "fields.base"
+                    },
+                    {
+                        "data": "fields.exec_date",
+                        "type": "date"
+                    },
                 ]
-                });
+            });
 
+            var tradesTable = $('#trades-table').DataTable({
+                "scrollY":         "70vh",
+                "scrollCollapse": true,
+                "paging": false,
+                "select": "single",
+
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+                    "decimal": ","
+                },
+                "saveState": true,
+                "searching": false,
+                "ajax": "/polls/trades",
+                "columns": [
+                    {
+                        "data": "pk"
+                    },
+                    {
+                        "data": "fields.torg_date",
+                        "type": "date"
+                    },
+                    {
+                        "data": "fields.day_end",
+                        "type": "date"
+                    },
+                    {
+                        "data": "fields.quotation",
+                        "className": "dt-right"
+                    },
+                    {
+                        "data": "fields.min_quot",
+                        "className": "dt-right"
+                    },
+                    {
+                        "data": "fields.max_quot",
+                        "className": "dt-right"
+                    },
+                    {
+                        "data": "fields.num_contr",
+                        "className": "dt-right"
+                    },
+                ]
+            });
 
             //futures-buttons-functions
             $("#futures-create-ok-button").click(function (e) {
@@ -476,11 +520,11 @@
                     });
             });
 
-            $("#trades-delete-button").click(function (e) {
-                var td = $("#trades-table tr.selected td:first-child()");
+            $("#trades-delete-ok-button").click(function (e) {
+                var td = $("#trades-table tr.selected td");
                 $.ajax({
                     "method": "delete",
-                    "url": "/polls/trades/" + td.text(),
+                    "url": `/polls/trades/${td[1].innerText}/${td[0].innerText}`,
                     "success": function() {
                         $("#tradesDeleteModal").modal('hide');
                         tradesTable.ajax.reload();
@@ -493,15 +537,26 @@
                 var name = td[0].innerText;
                 $("#trades-edit-name-input").val(name);
                 $("#trades-edit-original-name").val(name);
-                $("#trades-edit-code-input").val(td[1].innerText);
-                $("#trades-edit-date-input").val(td[2].innerText);
+                var torg_date = td[1].innerText;
+                $("#trades-edit-torg-date-input").val(torg_date);
+                $("#trades-edit-original-torg-date").val(torg_date);
+                $("#trades-edit-day-end-input").val(td[2].innerText);
+                $("#trades-edit-quotation-input").val(td[3].innerText);
+                $("#trades-edit-max-quot-input").val(td[4].innerText);
+                $("#trades-edit-min-quot-input").val(td[5].innerText);
+                $("#trades-edit-num-contr-input").val(td[6].innerText);
             });
 
             $("#trades-edit-ok-button").click(function (e) {
                 var originalName = $("#trades-edit-original-name").val();
+                var originalDate = $("#trades-edit-original-torg-date").val();
                 var name = $("#trades-edit-name-input").val();
-                var code = $("#trades-edit-code-input").val();
-                var date = $("#trades-edit-date-input").val();
+                var torg_date = $("#trades-edit-torg-date-input").val();
+                var day_end = $("#trades-edit-day-end-input").val();
+                var quotation = $("#trades-edit-quotation-input").val();
+                var max_quot = $("#trades-edit-max-quot-input").val();
+                var min_quot = $("#trades-edit-min-quot-input").val();
+                var num_contr = $("#trades-edit-num-contr-input").val();
                 var request = {
                     "name" : name,
                     "torg_date" : torg_date,
@@ -513,10 +568,10 @@
                 };
                 $.ajax({
                     "method": "put",
-                    "url": "/polls/trades/" + originalName,
+                    "url": "/polls/trades/" + originalDate + "/" + originalName,
                     "data": JSON.stringify(request),
                     "success": function() {
-                        $("#tradesDeleteModal").modal('hide');
+                        $("#tradesEditModal").modal('hide');
                         tradesTable.ajax.reload();
                     }
                 });
@@ -562,48 +617,6 @@
             var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);
             var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, 1);
             attachDateFilter('futures-date-filter', futuresTable, 2);
-
-            $('#trades-table').DataTable({
-
-                "scrollY":         "70vh",
-                "scrollCollapse": true,
-                "paging": false,
-
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
-                    "decimal": ","
-                },
-                "saveState": true,
-                "searching": false,
-                "ajax": "/polls/trades",
-                "columns": [
-                { "data": "pk" },
-                {
-                    "data": "fields.torg_date",
-                    "type": "date"
-                },
-                {
-                    "data": "fields.day_end",
-                    "type": "date"
-                },
-                {
-                    "data": "fields.quotation",
-                    "className": "dt-right"
-                },
-                {
-                    "data": "fields.min_quot",
-                    "className": "dt-right"
-                },
-                {
-                    "data": "fields.max_quot",
-                    "className": "dt-right"
-                },
-                {
-                    "data": "fields.num_contr",
-                    "className": "dt-right"
-                },
-                ]
-            });
         });
 
 $(function(){
