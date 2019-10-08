@@ -49,7 +49,7 @@ def trades(request):
         max_quot = body['max_quot']
         min_quot = body['min_quot']
         num_contr = body['num_contr']
-        trades = Trades(name=name, torg_date=code, day_end=date, quotation=quotation, max_quot=max_quot, min_quot=min_quot, quotation=quotation)
+        trades = Trades(name=name, torg_date=torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
         trades.save()
         return HttpResponse('trade created')
     else:
@@ -68,5 +68,5 @@ def modify_trades(request, name):
         max_quot = body['max_quot']
         min_quot = body['min_quot']
         num_contr = body['num_contr']
-        Trades.objects.filter(name=name, torg_date=code).update(name=name, torg_date=code, day_end=date, quotation=quotation, max_quot=max_quot, min_quot=min_quot, quotation=quotation)
+        Trades.objects.filter(name=name, torg_date=code).update(name=name, torg_date=torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
         return HttpResponse('trade updated')
