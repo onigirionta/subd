@@ -117,7 +117,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
-                                <button type="button" class="btn btn-primary" id="futures-delete-button">Удалить</button>
+                                <button type="button" class="btn btn-primary" id="futures-delete-ok-button">Удалить</button>
                             </div>
                         </div>
                     </div>
@@ -407,7 +407,7 @@
                     });
             });
 
-            $("#futures-delete-button").click(function (e) {
+            $("#futures-delete-ok-button").click(function (e) {
                 var td = $("#futures-table tr.selected td:first-child()");
                 $.ajax({
                     "method": "delete",
