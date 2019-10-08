@@ -37,5 +37,36 @@ def modify_futures(request, name):
         return HttpResponse('futures updated')
 
 def trades(request):
-    ts = serialize('json', Trades.objects.all())
-    return HttpResponse(f'{{"data": {ts}}}')
+    if request.method == 'GET':
+        ts = serialize('json', Trades.objects.all())
+        return HttpResponse(f'{{"data": {ts}}}')
+    elif request.method == 'POST':
+        body = json.load(request)
+        name = body['name']
+        torg_date = datetime.strptime(body['torg_date'], '%Y-%m-%d')
+        day_end = datetime.strptime(body['day_end'], '%Y-%m-%d')        
+        quotation = body['quotation']
+        max_quot = body['max_quot']
+        min_quot = body['min_quot']
+        num_contr = body['num_contr']
+        trades = Trades(name=name, torg_date=code, day_end=date, quotation=quotation, max_quot=max_quot, min_quot=min_quot, quotation=quotation)
+        trades.save()
+        return HttpResponse('trade created')
+    else:
+        pass  # TODO: error
+
+def modify_trades(request, name):
+    if request.method == 'DELETE':
+        Trades.objects.filter(name=name, torg_date=code).delete()
+        return HttpResponse('trade deleted')
+    elif request.method == 'PUT':
+        body = json.load(request)
+        name = body['name']
+        torg_date = datetime.strptime(body['torg_date'], '%Y-%m-%d')
+        day_end = datetime.strptime(body['day_end'], '%Y-%m-%d')        
+        quotation = body['quotation']
+        max_quot = body['max_quot']
+        min_quot = body['min_quot']
+        num_contr = body['num_contr']
+        Trades.objects.filter(name=name, torg_date=code).update(name=name, torg_date=code, day_end=date, quotation=quotation, max_quot=max_quot, min_quot=min_quot, quotation=quotation)
+        return HttpResponse('trade updated')

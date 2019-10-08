@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 -->
-
+                 <!-- futures-buttons -->
                 <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
                     Добавить новую запись
                 </button>
@@ -102,7 +102,7 @@
                     </table>
                 </div>
 
-                <!-- Modal -->
+                <!-- Modal-futures-delete -->
                 <div class="modal" id="futuresDeleteModal" tabindex="-1" role="dialog" aria-labelledby="futuresDeleteModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -123,7 +123,7 @@
                     </div>
                 </div>
 
-                <!-- Modal -->
+                <!-- Modal-futures-create -->
                 <div class="modal" id="futuresCreateModal" tabindex="-1" role="dialog" aria-labelledby="futuresCreateModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -156,7 +156,7 @@
                 </div>
 
 
-                <!-- Modal -->
+                <!-- Modal-futures-edit -->
                 <div class="modal" id="futuresEditModal" tabindex="-1" role="dialog" aria-labelledby="futuresEditModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -189,7 +189,22 @@
                     </div>
                 </div>
             </div>
+
             <div class="tab-pane show" id="trades" role="tabpanel" aria-labelledby="trades-tab">
+
+                  <!-- trades-buttons -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" id="trades-create-button" data-target="#tradesCreateModal">
+                    Добавить новую запись
+                </button>
+
+                <button type="button" class="btn" data-toggle="modal" id="trades-edit-button" data-target="#tradesEditModal">
+                    Редактировать запись
+                </button>
+
+                <button type="button" class="btn btn-danger" data-toggle="modal" id="trades-delete-button" data-target="#tradesDeleteModal">
+                    Удалить выбранную запись
+                </button>
+
                 <table id="trades-table" class="display">
                     <thead>
                         <tr>
@@ -206,6 +221,93 @@
                     </tbody>
                 </table>
                 <p>* в процентах от номинальной цены ценной бумаги</p>
+
+                <!-- Modal-trades-delete -->
+                <div class="modal" id="tradesDeleteModal" tabindex="-1" role="dialog" aria-labelledby="tradesDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tradesModalLabel">Удаление торгов</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Вы уверены, что хотите удалить торг?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="trades-delete-button">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Modal-trades-create -->
+                <div class="modal" id="tradesCreateModal" tabindex="-1" role="dialog" aria-labelledby="tradesCreateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tradesCreateModalLabel">Данные торгов</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="trades-create-name-input" class="col-form-label">Фьючерс:</label>
+                                    <input type="text" class="form-control" id="trades-create-name-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-create-code-input" class="col-form-label">Дата торгов:</label>
+                                    <input type="text" class="form-control" id="trades-create-code-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-create-date-input" class="col-form-label">Дата погашения:</label>
+                                    <input type="text" class="form-control" id="trades-create-date-input">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="trades-create-ok-button">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal-trades-edit -->
+                <div class="modal" id="tradesEditModal" tabindex="-1" role="dialog" aria-labelledby="tradesEditModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tradesEditModalLabel">Редактирование фьючерса</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id="trades-edit-original-name" />
+                                <div class="form-group">
+                                    <label for="trades-edit-name-input" class="col-form-label">Фьючерс:</label>
+                                    <input type="text" class="form-control" id="trades-edit-name-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-edit-code-input" class="col-form-label">Код серии:</label>
+                                    <input type="text" class="form-control" id="trades-edit-code-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-edit-date-input" class="col-form-label">Дата исполнения:</label>
+                                    <input type="text" class="form-control" id="trades-edit-date-input">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                                <button type="button" class="btn btn-primary" id="futures-edit-ok-button">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="market" role="tabpanel" aria-labelledby="market-tab">market</div>
             <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">report</div>
@@ -253,6 +355,8 @@
                 ]
                 });
 
+
+            //futures-buttons-functions
             $("#futures-create-ok-button").click(function (e) {
                 var name = $("#futures-create-name-input").val();
                 var code = $("#futures-create-code-input").val();
@@ -313,6 +417,66 @@
                 });
             });
 
+             //trades-buttons-functions
+            $("#trades-create-ok-button").click(function (e) {
+                var name = $("#trades-create-name-input").val();
+                var code = $("#trades-create-code-input").val();
+                var date = $("#trades-create-date-input").val();
+                var request = {
+                    "name" : name,
+                    "code" : code,
+                    "date" : date
+                };
+                $.post(
+                    "/polls/trades",
+                    JSON.stringify(request),
+                    function (data, status, jq) {
+                        $("#tradesModal").modal('hide');
+                        tradesTable.ajax.reload();
+                    });
+            });
+
+            $("#trades-delete-button").click(function (e) {
+                var td = $("#trades-table tr.selected td:first-child()");
+                $.ajax({
+                    "method": "delete",
+                    "url": "/polls/trades/" + td.text(),
+                    "success": function() {
+                        $("#tradesDeleteModal").modal('hide');
+                        tradesTable.ajax.reload();
+                    }
+                });
+            });
+
+            $("#trades-edit-button").click(function (e) {
+                var td = $("#trades-table tr.selected td");
+                var name = td[0].innerText;
+                $("#trades-edit-name-input").val(name);
+                $("#trades-edit-original-name").val(name);
+                $("#trades-edit-code-input").val(td[1].innerText);
+                $("#trades-edit-date-input").val(td[2].innerText);
+            });
+
+            $("#trades-edit-ok-button").click(function (e) {
+                var originalName = $("#trades-edit-original-name").val();
+                var name = $("#trades-edit-name-input").val();
+                var code = $("#trades-edit-code-input").val();
+                var date = $("#trades-edit-date-input").val();
+                var request = {
+                    "name" : name,
+                    "code" : code,
+                    "date" : date
+                };
+                $.ajax({
+                    "method": "put",
+                    "url": "/polls/trades/" + originalName,
+                    "data": JSON.stringify(request),
+                    "success": function() {
+                        $("#tradesDeleteModal").modal('hide');
+                        tradesTable.ajax.reload();
+                    }
+                });
+            });
 
             var attachTextFilter = function (filterId, table, columnIndex) {
                 var filter = $('#' + filterId);
