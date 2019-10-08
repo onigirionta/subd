@@ -605,13 +605,12 @@
                         }
 
                         var to = Date.parse(filterTo.val());
-                        if (to && (item < to)) {
+                        if (to && (to < item)) {
                             return false;
                         }
 
                         return true;
-                    }
-                    );
+                    });
             };
 
             var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);
