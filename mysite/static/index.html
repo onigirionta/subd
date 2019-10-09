@@ -219,6 +219,37 @@
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>
+                                <input type="text" id="trades-name-filter" placeholder="Фьючерс" size="12"/>
+                            </th>
+                            <th>
+                                <input type="date" id="trades-date-filter-from"/>
+                                <input type="date" id="trades-date-filter-to"/>
+                            </th>
+                            <th>
+                                <input type="date" id="trades-expiration-filter-from"/>
+                                <input type="date" id="trades-expiration-filter-to"/>
+                            </th>
+                            <th>
+                                <input type="text" id="trades-quotation-filter-from" placeholder="от" size="6"/>
+                                <input type="text" id="trades-quotation-filter-to" placeholder="до" size="6"/>
+                            </th>
+                            <th>
+                                <input type="text" id="trades-min-quot-filter-from" placeholder="от" size="6"/>
+                                <input type="text" id="trades-min-quot-filter-to" placeholder="до" size="6"/>
+                            </th>
+                            <th>
+                                <input type="text" id="trades-max-quot-filter-from" placeholder="от" size="6"/>
+                                <input type="text" id="trades-max-quot-filter-to" placeholder="до" size="6"/>
+                            </th>
+                            <th>
+                                <input type="text" id="trades-quantity-filter-from" placeholder="от" size="6"/>
+                                <input type="text" id="trades-quantity-filter-to" placeholder="до" size="6"/>
+                            </th>
+                        </tr>
+                    </tfoot>
                 </table>
                 <p>* в процентах от номинальной цены ценной бумаги</p>
 
@@ -362,6 +393,7 @@
             });
 
             var futuresTable = $('#futures-table').DataTable({
+                "tag": "futures",
                 "scrollY":         "70vh",
                 "scrollCollapse": true,
                 "paging": false,
@@ -389,6 +421,7 @@
             });
 
             var tradesTable = $('#trades-table').DataTable({
+                "tag": "trades",
                 "scrollY":         "70vh",
                 "scrollCollapse": true,
                 "paging": false,
@@ -399,7 +432,6 @@
                     "decimal": ","
                 },
                 "saveState": true,
-                "searching": false,
                 "ajax": "/polls/trades",
                 "columns": [
                     {
@@ -577,26 +609,34 @@
                 });
             });
 
-            var attachTextFilter = function (filterId, table, columnIndex) {
+            var attachTextFilter = function (filterId, table, tableTag, columnIndex) {
                 var filter = $('#' + filterId);
                 filter.keyup(function() {
                     table.draw();
                 });
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
+                        if (settings.tag && (settings.tag != tableTag)) {
+                            return true;
+                        }
+
                         return (data[columnIndex] || "").includes(filter.val());
                     }
                     );
                 return filter;
             };
 
-            var attachDateFilter = function (filterBaseId, table, columnIndex) {
+            var attachDateFilter = function (filterBaseId, table, tableTag, columnIndex) {
                 var filterFrom = $('#' + filterBaseId + '-from');
                 var filterTo = $('#' + filterBaseId + '-to');
                 filterFrom.change(function() { table.draw(); });
                 filterTo.change(function() { table.draw(); });
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
+                        if (settings.tag && (settings.tag != tableTag)) {
+                            return true;
+                        }
+
                         var item = Date.parse(data[columnIndex]);
 
                         var from = Date.parse(filterFrom.val());
@@ -613,9 +653,47 @@
                     });
             };
 
-            var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);
-            var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, 1);
-            attachDateFilter('futures-date-filter', futuresTable, 2);
+            var attachRangeFilter = function (filterBaseId, table, tableTag, columnIndex) {
+                var filterFrom = $('#' + filterBaseId + '-from');
+                var filterTo = $('#' + filterBaseId + '-to');
+
+                filterFrom.on('change keyup clear', function() { table.draw(); });
+                filterTo.on('change keyup clear', function() { table.draw(); });
+                
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        if (settings.tag && (settings.tag != tableTag)) {
+                            return true;
+                        }
+
+                        var item = parseFloat(data[columnIndex]);
+
+                        var from = parseFloat(filterFrom.val());
+                        if (from && (item < from)) {
+                            return false;
+                        }
+
+                        var to = parseFloat(filterTo.val());
+                        if (to && (to < item)) {
+                            return false;
+                        }
+
+                        return true;
+                    });
+            };
+            
+            //futures filtres
+            var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, "futures", 0);
+            var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, "futures", 1);
+            attachDateFilter('futures-date-filter', futuresTable, "futures", 2);
+            //trades filtres
+            var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, "trades", 0);
+            attachDateFilter('trades-date-filter', tradesTable, "trades", 1);
+            attachDateFilter('trades-expiration-filter', tradesTable, "trades", 2);
+            attachRangeFilter('trades-quotation-filter', tradesTable, "trades", 3);
+            attachRangeFilter('trades-min-quot-filter', tradesTable, "trades", 4);
+            attachRangeFilter('trades-max-quot-filter', tradesTable, "trades", 5);
+            attachRangeFilter('trades-quantity-filter', tradesTable, "trades", 6);
         });
 
 $(function(){
