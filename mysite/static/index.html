@@ -609,31 +609,35 @@
                 });
             });
 
-            var attachTextFilter = function (filterId, table, tableTag, columnIndex) {
+            var attachTextFilter = function (filterId, table, columnIndex) {
+                var tableId = table.settings()[0].sTableId;
+
                 var filter = $('#' + filterId);
-                filter.keyup(function() {
+                filter.on('change keyup clear', function() {
                     table.draw();
                 });
+
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
+                        if (settings.sTableId != tableId) {
                             return true;
                         }
 
                         return (data[columnIndex] || "").includes(filter.val());
-                    }
-                    );
+                    });
                 return filter;
             };
 
-            var attachDateFilter = function (filterBaseId, table, tableTag, columnIndex) {
+            var attachDateFilter = function (filterBaseId, table, columnIndex) {
+                var tableId = table.settings()[0].sTableId;
+
                 var filterFrom = $('#' + filterBaseId + '-from');
                 var filterTo = $('#' + filterBaseId + '-to');
                 filterFrom.change(function() { table.draw(); });
                 filterTo.change(function() { table.draw(); });
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
+                        if (settings.sTableId != tableId) {
                             return true;
                         }
 
@@ -653,7 +657,9 @@
                     });
             };
 
-            var attachRangeFilter = function (filterBaseId, table, tableTag, columnIndex) {
+            var attachRangeFilter = function (filterBaseId, table, columnIndex) {
+                var tableId = table.settings()[0].sTableId;
+
                 var filterFrom = $('#' + filterBaseId + '-from');
                 var filterTo = $('#' + filterBaseId + '-to');
 
@@ -662,7 +668,7 @@
                 
                 $.fn.dataTable.ext.search.push(
                     function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
+                        if (settings.sTableId != tableId) {
                             return true;
                         }
 
@@ -683,17 +689,17 @@
             };
             
             //futures filtres
-            var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, "futures", 0);
-            var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, "futures", 1);
-            attachDateFilter('futures-date-filter', futuresTable, "futures", 2);
+            var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);
+            var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, 1);
+            attachDateFilter('futures-date-filter', futuresTable, 2);
             //trades filtres
-            var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, "trades", 0);
-            attachDateFilter('trades-date-filter', tradesTable, "trades", 1);
-            attachDateFilter('trades-expiration-filter', tradesTable, "trades", 2);
-            attachRangeFilter('trades-quotation-filter', tradesTable, "trades", 3);
-            attachRangeFilter('trades-min-quot-filter', tradesTable, "trades", 4);
-            attachRangeFilter('trades-max-quot-filter', tradesTable, "trades", 5);
-            attachRangeFilter('trades-quantity-filter', tradesTable, "trades", 6);
+            var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, 0);
+            attachDateFilter('trades-date-filter', tradesTable, 1);
+            attachDateFilter('trades-expiration-filter', tradesTable, 2);
+            attachRangeFilter('trades-quotation-filter', tradesTable, 3);
+            attachRangeFilter('trades-min-quot-filter', tradesTable, 4);
+            attachRangeFilter('trades-max-quot-filter', tradesTable, 5);
+            attachRangeFilter('trades-quantity-filter', tradesTable, 6);
         });
 
 $(function(){
