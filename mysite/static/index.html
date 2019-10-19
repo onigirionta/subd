@@ -134,13 +134,15 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                <div class="alert alert-danger" style="display: none" role="alert" id="futures-create-alert"></div>
                                 <div class="form-group">
                                     <label for="futures-create-code-input" class="col-form-label">Код серии:</label>
                                     <input type="text" class="form-control" id="futures-create-code-input" pattern="^[0-9]{5}$" title="5 цифр">
                                 </div>
                                 <div class="form-group">
                                     <label for="futures-create-date-input" class="col-form-label">Дата исполнения:</label>
-                                    <input type="text" class="form-control" id="futures-create-date-input">
+                                    <input type="date" class="form-control" id="futures-create-date-input">
+                                    <!-- <input type="text" class="form-control" id="futures-create-date-input" pattern="^\d{4}-\d{2}-\d{2}$" placeholder="гггг-мм-дд"> -->
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -164,17 +166,14 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id="futures-edit-original-name" />
-                                <div class="form-group">
-                                    <label for="futures-edit-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="futures-edit-name-input">
-                                </div>
+                                <div class="alert alert-danger" style="display: none" role="alert" id="futures-edit-alert"></div>
                                 <div class="form-group">
                                     <label for="futures-edit-code-input" class="col-form-label">Код серии:</label>
-                                    <input type="text" class="form-control" id="futures-edit-code-input">
+                                    <input type="text" class="form-control" id="futures-edit-code-input" pattern="^[0-9]{5}$" title="5 цифр">
                                 </div>
                                 <div class="form-group">
                                     <label for="futures-edit-date-input" class="col-form-label">Дата исполнения:</label>
-                                    <input type="text" class="form-control" id="futures-edit-date-input">
+                                    <input type="date" class="form-control" id="futures-edit-date-input">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -281,29 +280,30 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                <div class="alert alert-danger" style="display: none" role="alert" id="trades-create-alert"></div>
                                 <div class="form-group">
                                     <label for="trades-create-name-input" class="col-form-label">Фьючерс:</label>
                                     <input type="text" class="form-control" id="trades-create-name-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-torg-date-input" class="col-form-label">Дата торгов:</label>
-                                    <input type="text" class="form-control" id="trades-create-torg-date-input">
+                                    <input type="date" class="form-control" id="trades-create-torg-date-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-day-end-input" class="col-form-label">Дата погашения:</label>
-                                    <input type="text" class="form-control" id="trades-create-day-end-input">
+                                    <input type="date" class="form-control" id="trades-create-day-end-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-quotation-input" class="col-form-label">Котировка</label>
                                     <input type="text" class="form-control" id="trades-create-quotation-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-create-max-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-create-max-quot-input">
+                                    <label for="trades-create-min-quot-input" class="col-form-label">Минимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-create-min-quot-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-create-min-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-create-min-quot-input">
+                                    <label for="trades-create-max-quot-input" class="col-form-label">Максимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-create-max-quot-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-num-contr-input" class="col-form-label">Число проданных:</label>
@@ -330,6 +330,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                <div class="alert alert-danger" style="display: none" role="alert" id="trades-edit-alert"></div>
                                 <input type="hidden" id="trades-edit-original-name" />
                                 <input type="hidden" id="trades-edit-original-torg-date" />
                                 <div class="form-group">
@@ -338,23 +339,23 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-torg-date-input" class="col-form-label">Дата торгов:</label>
-                                    <input type="text" class="form-control" id="trades-edit-torg-date-input">
+                                    <input type="date" class="form-control" id="trades-edit-torg-date-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-day-end-input" class="col-form-label">Дата погашения:</label>
-                                    <input type="text" class="form-control" id="trades-edit-day-end-input">
+                                    <input type="date" class="form-control" id="trades-edit-day-end-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-quotation-input" class="col-form-label">Котировка</label>
                                     <input type="text" class="form-control" id="trades-edit-quotation-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-edit-max-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-edit-max-quot-input">
-                                </div>
-                                <div class="form-group">
                                     <label for="trades-edit-min-quot-input" class="col-form-label">Минимальная цена:</label>
                                     <input type="text" class="form-control" id="trades-edit-min-quot-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-edit-max-quot-input" class="col-form-label">Максимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-edit-max-quot-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-num-contr-input" class="col-form-label">Число проданных:</label>
@@ -461,6 +462,20 @@
             });
 
             //futures-buttons-functions
+
+
+            var displayError = function(id) {
+                return function (xhr, textStatus, errorThrown) {
+                    var alert = $('#' + id);
+                    alert.text(xhr.responseText);
+                    alert.show();
+                };
+            };
+
+            $("#futures-create-button").click(function (e) {
+                $("#futures-create-alert").hide();
+            });
+
             $("#futures-create-ok-button").click(function (e) {
                 var code = $("#futures-create-code-input").val();
                 var date = $("#futures-create-date-input").val();
@@ -468,13 +483,16 @@
                     "code" : 'SU' + code + 'RMFS',
                     "date" : date
                 };
-                $.post(
-                    "/polls/futures",
-                    JSON.stringify(request),
-                    function (data, status, jq) {
+                $.ajax({
+                    "method": "POST",
+                    "url": "/polls/futures",
+                    "data": JSON.stringify(request),
+                    "success": function (data, status, jq) {
                         $("#futuresCreateModal").modal('hide');
                         futuresTable.ajax.reload();
-                    });
+                    },
+                    "error": displayError('futures-create-alert')
+                });
             });
 
             $("#futures-delete-ok-button").click(function (e) {
@@ -490,22 +508,20 @@
             });
 
             $("#futures-edit-button").click(function (e) {
+                $("#futures-edit-alert").hide();
                 var td = $("#futures-table tr.selected td");
                 var name = td[0].innerText;
-                $("#futures-edit-name-input").val(name);
                 $("#futures-edit-original-name").val(name);
-                $("#futures-edit-code-input").val(td[1].innerText);
+                $("#futures-edit-code-input").val(td[1].innerText.substring(2,7));
                 $("#futures-edit-date-input").val(td[2].innerText);
             });
 
             $("#futures-edit-ok-button").click(function (e) {
                 var originalName = $("#futures-edit-original-name").val();
-                var name = $("#futures-edit-name-input").val();
                 var code = $("#futures-edit-code-input").val();
                 var date = $("#futures-edit-date-input").val();
                 var request = {
-                    "name" : name,
-                    "code" : code,
+                    "code" : 'SU' + code + 'RMFS',
                     "date" : date
                 };
                 $.ajax({
@@ -515,11 +531,16 @@
                     "success": function() {
                         $("#futuresEditModal").modal('hide');
                         futuresTable.ajax.reload();
-                    }
+                    },
+                    "error": displayError('futures-edit-alert')
                 });
             });
 
              //trades-buttons-functions
+            $("#trades-create-button").click(function (e) {
+                $("#trades-create-alert").hide();
+            });
+
             $("#trades-create-ok-button").click(function (e) {
                 var name = $("#trades-create-name-input").val();
                 var torg_date = $("#trades-create-torg-date-input").val();
@@ -537,19 +558,22 @@
                     "min_quot" : min_quot,
                     "num_contr" : num_contr
                 };
-                $.post(
-                    "/polls/trades",
-                    JSON.stringify(request),
-                    function (data, status, jq) {
+                $.ajax({
+                    "method": "POST",
+                    "url": "/polls/trades",
+                    "data": JSON.stringify(request),
+                    "success": function (data, status, jq) {
                         $("#tradesCreateModal").modal('hide');
                         tradesTable.ajax.reload();
-                    });
+                    },
+                    "error": displayError('trades-create-alert')
+                });
             });
 
             $("#trades-delete-ok-button").click(function (e) {
                 var td = $("#trades-table tr.selected td");
                 $.ajax({
-                    "method": "delete",
+                    "method": "DELETE",
                     "url": `/polls/trades/${td[1].innerText}/${td[0].innerText}`,
                     "success": function() {
                         $("#tradesDeleteModal").modal('hide');
@@ -559,6 +583,7 @@
             });
 
             $("#trades-edit-button").click(function (e) {
+                $('#trades-edit-alert').hide();
                 var td = $("#trades-table tr.selected td");
                 var name = td[0].innerText;
                 $("#trades-edit-name-input").val(name);
@@ -568,8 +593,8 @@
                 $("#trades-edit-original-torg-date").val(torg_date);
                 $("#trades-edit-day-end-input").val(td[2].innerText);
                 $("#trades-edit-quotation-input").val(td[3].innerText);
-                $("#trades-edit-max-quot-input").val(td[4].innerText);
-                $("#trades-edit-min-quot-input").val(td[5].innerText);
+                $("#trades-edit-min-quot-input").val(td[4].innerText);
+                $("#trades-edit-max-quot-input").val(td[5].innerText);
                 $("#trades-edit-num-contr-input").val(td[6].innerText);
             });
 
@@ -593,13 +618,14 @@
                     "num_contr" : num_contr
                 };
                 $.ajax({
-                    "method": "put",
+                    "method": "PUT",
                     "url": "/polls/trades/" + originalDate + "/" + originalName,
                     "data": JSON.stringify(request),
                     "success": function() {
                         $("#tradesEditModal").modal('hide');
                         tradesTable.ajax.reload();
-                    }
+                    },
+                    "error": displayError('trades-edit-alert')
                 });
             });
 
