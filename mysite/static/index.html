@@ -27,10 +27,10 @@
                     <a href="#trades" class="nav-link" id="trades-tab" data-toggle="tab" role="tab" aria-controls="trades">Торги</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="#market" class="nav-link" id="market-tab" data-toggle="tab" role="tab" aria-controls="market">Рынок</a>
+                    <a href="#report" class="nav-link" id="report-tab" data-toggle="tab" role="tab" aria-controls="report">Отчёт по фьючерсу</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="#report" class="nav-link" id="report-tab" data-toggle="tab" role="tab" aria-controls="report">Отчет</a>
+                    <a href="#summary" class="nav-link" id="summary-tab" data-toggle="tab" role="tab" aria-controls="summary">Сводка по датам</a>
                 </li>
             </ul>
         </div>
@@ -370,8 +370,52 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="market" role="tabpanel" aria-labelledby="market-tab">market</div>
-            <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">report</div>
+            <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">
+                <div style="margin: 1em">
+                    <table id="report-table" class="display">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Цена</th>
+                                <th>Дата торгов</th>
+                                <th>Однодневная<br/> процентная ставка <i>r<sub>k</sub></i></th>
+                                <th>
+                                    Логарифм изменения <i>r<sub>k</sub></i><br/> за два торговых дня<br/>
+                                    <small>
+                                        <i>x<sub>k</sub> = lg(r<sub>k</sub>(i) ∕ r<sub>k</sub>(i&minus;2))</i>
+                                    </small>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <input type="text" id="report-name-filter" placeholder="Фьючерс" />
+                                </th>
+                                <th>
+                                    <input type="text" id="report-quotation-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-quotation-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="report-torg-date-filter-from" />
+                                    <input type="date" id="report-torg-date-filter-to" />
+                                </th>
+                                <th>
+                                    <input type="text" id="report-rk-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-rk-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="report-xk-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-xk-filter-to" placeholder="до" size="6"/>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="summary" role="tabpanel" aria-labelledby="summary-tab">summary</div>
         </div>
     </main>
 
@@ -460,6 +504,50 @@
                     },
                 ]
             });
+
+            var renderNumber = function (data) {
+                return (new Number(data)).toFixed(6);
+            };
+
+            var reportTable = $('#report-table').DataTable({
+                "tag": "report",
+                "scrollY":         "70vh",
+                "scrollCollapse": true,
+                "paging": false,
+
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+                    "decimal": ","
+                },
+                "saveState": true,
+                // "searching": false,
+                "ajax": "/polls/report",
+                "columns": [
+                    {
+                        "data": "pk"
+                    },
+                    {
+                        "data": "fields.quotation",
+                        "className": "dt-right"
+                    },
+                    { 
+                        "data": "fields.torg_date",
+                        "className": "dt-right"
+                    },
+                    {
+                        "data": "fields.rk",
+                        "render": renderNumber,
+                        "className": "dt-right"
+                    },
+                    {
+                        "data": "fields.xk",
+                        "render": renderNumber,
+                        "className": "dt-right"
+                    }
+                ]
+            });
+
+
 
             //futures-buttons-functions
 
@@ -720,6 +808,12 @@
             attachRangeFilter('trades-min-quot-filter', tradesTable, 4);
             attachRangeFilter('trades-max-quot-filter', tradesTable, 5);
             attachRangeFilter('trades-quantity-filter', tradesTable, 6);
+            //report filtres
+            var reportNameFilter = attachTextFilter('report-name-filter', reportTable, 0);
+            attachRangeFilter('report-quotation-filter', reportTable, 1);
+            attachDateFilter('report-torg-date-filter', reportTable, 2);
+            attachRangeFilter('report-rk-filter', reportTable, 3);
+            attachRangeFilter('report-xk-filter', reportTable, 4);
         });
 
         var hash = window.location.hash;

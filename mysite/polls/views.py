@@ -9,7 +9,7 @@ import re
 from django.http import HttpResponse
 import json
 
-from .models import Futures, Trades
+from .models import Futures, Trades, Report
 
 
 def futures(request):
@@ -182,3 +182,8 @@ def vailidate_trade(name, torg_date, day_end, quotation, max_quot, min_quot, num
         return 'Торг не может быть позже исполнения фьючерса.'
     if day_end.date() < needed_futures[0].exec_date:
         return 'Погашение не может быть раньше исполнения фьючерса.'
+
+def report(request):
+    if request.method == 'GET':
+        rs = serialize('json', Report.objects.all())
+        return HttpResponse(f'{{"data": {rs}}}')
