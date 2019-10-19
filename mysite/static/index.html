@@ -669,12 +669,12 @@
                         var item = parseFloat(data[columnIndex]);
 
                         var from = parseFloat(filterFrom.val());
-                        if (from && (item < from)) {
+                        if (!isNaN(from) && (item < from)) {
                             return false;
                         }
 
                         var to = parseFloat(filterTo.val());
-                        if (to && (to < item)) {
+                        if (!isNaN(to) && (to < item)) {
                             return false;
                         }
 
