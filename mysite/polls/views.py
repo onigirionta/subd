@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.shortcuts import render
 from django.core.serializers import serialize
 
+import re
 # Create your views here.
 from django.http import HttpResponse
 import json
@@ -16,14 +17,17 @@ def futures(request):
         return HttpResponse(f'{{"data": {fs}}}')
     elif request.method == 'POST':
         body = json.load(request)
-        name = body['name']
         code = body['code']
         date = datetime.strptime(body['date'], '%Y-%m-%d')
+        val = re.findall('^SU([0-9]{5})RMFS$', code)
+        if not val:
+            return HttpResponse('Глупенький ты пенек - напиши ты правильно уже формат кода. Ты сможешь.', status=422)
+        name = val[0] + date.strftime('-%d%m') + date.strftime('%Y')[2:]
         futures = Futures(name=name, base=code, exec_date=date)
         futures.save()
         return HttpResponse('futures created')
     else:
-        pass  # TODO: error
+        return HttpResponse('Ты творишь какую-то дичь.', status=405)
 
 def modify_futures(request, name):
     if request.method == 'DELETE':
