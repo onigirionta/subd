@@ -180,5 +180,5 @@ def vailidate_trade(name, torg_date, day_end, quotation, max_quot, min_quot, num
         return 'Нет такого фьючерса.'
     if torg_date.date() > needed_futures[0].exec_date:
         return 'Торг не может быть позже исполнения фьючерса.'
-    if day_end.date() > needed_futures[0].exec_date:
-        return 'Погашение не может быть позже исполнения фьючерса.'
+    if day_end.date() < needed_futures[0].exec_date:
+        return 'Погашение не может быть раньше исполнения фьючерса.'
