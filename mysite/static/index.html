@@ -446,6 +446,7 @@
                                 <th>Дисперсия</th>
                                 <th>Минимум</th>
                                 <th>Максимум</th>
+                                <th>Нормальность</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -626,6 +627,10 @@
                         "className": "dt-right",
                         "render": renderNumber,
                     },
+                    {
+                        "data": "fields.normal",
+                        "className": "dt-center"
+                    }
                 ]
             });
 

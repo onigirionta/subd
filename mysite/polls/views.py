@@ -7,7 +7,10 @@ from django.core.serializers import serialize
 import re
 # Create your views here.
 from django.http import HttpResponse
+from django.db import connection
 import json
+import numpy
+from scipy.stats import shapiro
 
 from .models import Futures, Trades, Report, Summary
 
@@ -200,7 +203,7 @@ def summary(request):
             return HttpResponse('Начало периода не может быть позже окончания.', status=422)
 
         query = '''
-select name, avg(xk),  stddev(xk), variance(xk), min(xk), max(xk), count(xk)
+select name, avg(xk),  stddev(xk), variance(xk), min(xk), max(xk), count(xk), NULL as normal
 from calc
 where 
     (torg_date between %s and %s)
@@ -208,11 +211,30 @@ where
 group by name;
 '''
         try:
-            ss = Summary.objects.raw(query, [date_from, date_to, date_to])
+            summaries = Summary.objects.raw(query, [date_from, date_to, date_to])
+
+            max_count = 0
+            for summary in summaries:
+                max_count = max(max_count, summary.count)
+
+            for summary in summaries:
+                if summary.count != max_count:
+                    continue
+
+                with connection.cursor() as cursor:
+                    cursor.execute('SELECT xk FROM calc WHERE (torg_date BETWEEN %s AND %s) and (name = %s)', [date_from, date_to, summary.name])
+                    samples = numpy.array([record[0] for record in cursor.fetchall()])
+
+                try:
+                    alpha = 0.05
+                    _, p = shapiro(samples)
+                    summary.normal = 'да' if p > alpha else 'нет'
+                except:
+                    summary.normal = 'недостаточно точек'
         except:
             return HttpResponse('Ошибка базы данных.', status=500)
 
-        return HttpResponse(serialize("json", ss))
+        return HttpResponse(serialize("json", summaries))
 
     else:
         return HttpResponse('Недопустимый глагол HTTP.', status=405)

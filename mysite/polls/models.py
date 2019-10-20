@@ -40,4 +40,5 @@ class Summary(models.Model):
     min = models.FloatField()
     max = models.FloatField()
     count = models.IntegerField()
+    normal = models.TextField()
         
