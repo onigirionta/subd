@@ -74,3 +74,19 @@ def modify_trades(request, torg_date, name):
         num_contr = int(body['num_contr'])
         Trades.objects.filter(name=name, torg_date=torg_date).update(name=new_name, torg_date=new_torg_date, day_end=day_end, quotation=quotation, max_quot=max_quot, min_quot=min_quot, num_contr=num_contr)
         return HttpResponse('trade updated')
+
+
+def check_input_futures(body):
+    new_name = body['name'].split('-')
+    code = body['code']
+    date = body['date'].split('-')
+    if code.upper().startswith('SU') and  code.upper().endswith('RMFS'):
+        if new_name[0] in code:
+            if new_name[1] == date[2]+date[1]+date[0][2:]:
+                return False
+            else:
+                return 'date or name incorrect'
+        else:
+            return 'code or name incorrect'
+    else:
+        return 'code incorrect'
