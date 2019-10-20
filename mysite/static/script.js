@@ -11,7 +11,7 @@ $(document).ready(function () {
         "select": "single",
 
         "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+            "url": "lib/datatables/Russian.json",
             "decimal": ","
         },
         "saveState": true,
@@ -39,7 +39,7 @@ $(document).ready(function () {
         "select": "single",
 
         "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+            "url": "lib/datatables/Russian.json",
             "decimal": ","
         },
         "saveState": true,
@@ -86,7 +86,7 @@ $(document).ready(function () {
         "paging": false,
 
         "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+            "url": "lib/datatables/Russian.json",
             "decimal": ","
         },
         "saveState": true,
@@ -122,7 +122,7 @@ $(document).ready(function () {
         "scrollCollapse": true,
         "paging": false,
         "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+            "url": "lib/datatables/Russian.json",
             "decimal": ","
         },
         "select": "single",
