@@ -9,7 +9,7 @@ import re
 from django.http import HttpResponse
 import json
 
-from .models import Futures, Trades, Report
+from .models import Futures, Trades, Report, Summary
 
 
 def futures(request):
@@ -187,3 +187,32 @@ def report(request):
     if request.method == 'GET':
         rs = serialize('json', Report.objects.all())
         return HttpResponse(f'{{"data": {rs}}}')
+
+def summary(request):
+    if request.method == 'GET':
+        try:
+            date_from = datetime.strptime(request.GET.get("from"), '%Y-%m-%d')
+            date_to = datetime.strptime(request.GET.get("to"), '%Y-%m-%d')
+        except:
+            return HttpResponse('Неверный формат данных.', status=400)
+
+        if date_from > date_to:
+            return HttpResponse('Начало периода не может быть позже окончания.', status=422)
+
+        query = '''
+select name, avg(xk),  stddev(xk), variance(xk), min(xk), max(xk), count(xk)
+from calc
+where 
+    (torg_date between %s and %s)
+    and name in (select name from calc where torg_date = %s)
+group by name;
+'''
+        try:
+            ss = Summary.objects.raw(query, [date_from, date_to, date_to])
+        except:
+            return HttpResponse('Ошибка базы данных.', status=500)
+
+        return HttpResponse(serialize("json", ss))
+
+    else:
+        return HttpResponse('Недопустимый глагол HTTP.', status=405)

@@ -14,6 +14,9 @@
     .dataTables_filter {
         display: none;
     }
+    #summary-table_info {
+        display: none;
+    }
 </style>
 </head>
 <body>
@@ -415,7 +418,41 @@
                     </table>
                 </div>
             </div>
-            <div class="tab-pane" id="summary" role="tabpanel" aria-labelledby="summary-tab">summary</div>
+            <div class="tab-pane" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                <h3>Статистика по изменению процентной ставки за два торговых дня</h3>
+
+                <div id="summary-alert" class="alert alert-danger" style="display: none;"></div>
+
+                <div class="form-row">
+                    <div class="form-inline col-xs-3">
+                        <label for="summary-date-from-input" class="mr-2">Период от</label>
+                        <input type="date" class="form-control" id="summary-date-from-input">
+                    </div>
+                    <div class="form-inline col-xs-3">
+                        <label for="summary-date-to-input" class="mr-2">до</label>
+                        <input type="date" class="form-control" id="summary-date-to-input">
+                    </div>
+                    <button class="btn btn-primary ml-3" id="summary-button">Сформировать</button>
+                </div>
+
+                <div style="margin: 1em">
+                    <table id="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Торгов</th>
+                                <th>Среднее</th>
+                                <th>Стандартное отклонение</th>
+                                <th>Дисперсия</th>
+                                <th>Минимум</th>
+                                <th>Максимум</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -547,10 +584,52 @@
                 ]
             });
 
-
+            var summaryTable = $('#summary-table').DataTable({
+                "scrollY": "70vh",
+                "scrollCollapse": true,
+                "paging": false,
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
+                    "decimal": ","
+                },
+                "saveState": true,
+                "columns": [
+                    {
+                        "data": "pk"
+                    },
+                    {
+                        "data": "fields.count",
+                        "className": "dt-right",
+                    },
+                    {
+                        "data": "fields.avg",
+                        "className": "dt-right",
+                        "render": renderNumber,
+                    },
+                    {
+                        "data": "fields.stddev",
+                        "className": "dt-right",
+                        "render": renderNumber,
+                    },
+                    {
+                        "data": "fields.variance",
+                        "className": "dt-right",
+                        "render": renderNumber,
+                    },
+                    {
+                        "data": "fields.min",
+                        "className": "dt-right",
+                        "render": renderNumber,
+                    },
+                    {
+                        "data": "fields.max",
+                        "className": "dt-right",
+                        "render": renderNumber,
+                    },
+                ]
+            });
 
             //futures-buttons-functions
-
 
             var displayError = function(id) {
                 return function (xhr, textStatus, errorThrown) {
@@ -717,6 +796,23 @@
                 });
             });
 
+            $("#summary-button").click(function (e){
+                $("#summary-alert").hide();
+                var dateFrom = $("#summary-date-from-input").val();
+                var dateTo = $("#summary-date-to-input").val();
+                $.ajax({
+                    "method": "GET",
+                    "dataType": "json",
+                    "url": `/polls/summary?from=${dateFrom}&to=${dateTo}`,
+                    "success": function (data) {
+                        summaryTable.clear();
+                        summaryTable.rows.add(data);
+                        summaryTable.draw();
+                    },
+                    "error": displayError("summary-alert")
+                });
+            });
+
             var attachTextFilter = function (filterId, table, columnIndex) {
                 var tableId = table.settings()[0].sTableId;
 
@@ -795,6 +891,8 @@
                         return true;
                     });
             };
+
+
             
             //futures filtres
             var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0);

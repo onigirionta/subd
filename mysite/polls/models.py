@@ -31,4 +31,13 @@ class Report(models.Model):
     torg_date = models.DateField()
     rk = models.FloatField()
     xk = models.FloatField()
+
+class Summary(models.Model):
+    name = models.CharField(primary_key=True, max_length=20)
+    avg = models.FloatField()
+    stddev = models.FloatField()
+    variance = models.FloatField()
+    min = models.FloatField()
+    max = models.FloatField()
+    count = models.IntegerField()
         
