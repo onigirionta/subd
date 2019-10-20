@@ -11,6 +11,7 @@ from django.db import connection
 import json
 import numpy
 from scipy.stats import shapiro
+import csv
 
 from .models import Futures, Trades, Report, Summary
 
@@ -238,3 +239,37 @@ group by name;
 
     else:
         return HttpResponse('Недопустимый глагол HTTP.', status=405)
+
+
+def history(request):
+    if request.method == 'GET':
+        return get_history(request)
+    else:
+        return HttpResponse('Недопустимый глагол HTTP.', status=405)
+
+
+def get_history(request):
+    try:
+        name = request.GET.get("name")
+        date_from = datetime.strptime(request.GET.get("from"), '%Y-%m-%d')
+        date_to = datetime.strptime(request.GET.get("to"), '%Y-%m-%d')
+    except:
+        return HttpResponse('Неверный формат данных.', status=400)
+
+    if not name:
+        return HttpResponse('Необходимо задать имя фьючерса.', status=422)
+    if date_from > date_to:
+        return HttpResponse('Начало периода не может быть позже окончания.', status=422)
+
+    try:
+        data = Report.objects.filter(name=name, torg_date__range=(date_from, date_to))
+    except Exception as e:
+        print(e)
+        return HttpResponse('Ошибка базы данных.', status=500)
+
+    response = HttpResponse()
+    w = csv.writer(response)
+    w.writerow(['torg_date', 'xk'])
+    for record in data:
+        w.writerow([record.torg_date, record.xk])
+    return response
