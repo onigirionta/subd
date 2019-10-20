@@ -20,6 +20,16 @@
     .select-info {
         display: none;
     }
+    @media screen {
+        .print-filters {
+            display: none;
+        }
+    }
+    @media print {
+        nav, tfoot, .buttons, #summary-button {
+            display: none;
+        }
+    }
 </style>
 </head>
 <body>
@@ -44,39 +54,22 @@
     <main role="main" class="container">
         <div class="tab-content">
             <div class="tab-pane show active" id="futures" role="tabpanel" aria-labelledby="futures-tab">
-                <!--
-                <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Фильтры</div>
-                    <div class="card-body collapse show" id="collapseOne">
-                        <div>
-                            <label for="futures-name-filter">Фьючерс:</label>
-                            
-                        </div>
-                        <div>
-                            <label for="futures-code-filter">Код серии:</label>
-                            <input type="text" id="futures-code-filter" />
-                        </div>
-                        <div>
-                            <label for="futures-date-filter-from">Дата исполнения: от</label>
-                            <input type="date" id="futures-date-filter-from"/>
-                            <label for="futures-date-filter-to">до</label>
-                            <input type="date" id="futures-date-filter-to"/>
-                        </div>
-                    </div>
+                <h3>Отчет по фьючерсам</h3>
+
+                <!-- futures-buttons -->
+                <div class="buttons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
+                        Добавить новую запись
+                    </button>
+                    <button type="button" class="btn" data-toggle="modal" id="futures-edit-button" data-target="#futuresEditModal">
+                        Редактировать запись
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" id="futures-delete-button" data-target="#futuresDeleteModal">
+                        Удалить выбранную запись
+                    </button>
                 </div>
-                -->
-                 <!-- futures-buttons -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
-                    Добавить новую запись
-                </button>
 
-                <button type="button" class="btn" data-toggle="modal" id="futures-edit-button" data-target="#futuresEditModal">
-                    Редактировать запись
-                </button>
-
-                <button type="button" class="btn btn-danger" data-toggle="modal" id="futures-delete-button" data-target="#futuresDeleteModal">
-                    Удалить выбранную запись
-                </button>
+                <ul id="futures-table-print-filters" class="print-filters"></ul>
 
                 <div style="margin: 1em">
                     <table id="futures-table" class="display">
@@ -192,19 +185,22 @@
             </div>
 
             <div class="tab-pane show" id="trades" role="tabpanel" aria-labelledby="trades-tab">
+                <h3>Отчет по торгам</h3>
 
-                  <!-- trades-buttons -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" id="trades-create-button" data-target="#tradesCreateModal">
-                    Добавить новую запись
-                </button>
+                <!-- trades-buttons -->
+                <div class="buttons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" id="trades-create-button" data-target="#tradesCreateModal">
+                        Добавить новую запись
+                    </button>
+                    <button type="button" class="btn" data-toggle="modal" id="trades-edit-button" data-target="#tradesEditModal">
+                        Редактировать запись
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" id="trades-delete-button" data-target="#tradesDeleteModal">
+                        Удалить выбранную запись
+                    </button>
+                </div>
 
-                <button type="button" class="btn" data-toggle="modal" id="trades-edit-button" data-target="#tradesEditModal">
-                    Редактировать запись
-                </button>
-
-                <button type="button" class="btn btn-danger" data-toggle="modal" id="trades-delete-button" data-target="#tradesDeleteModal">
-                    Удалить выбранную запись
-                </button>
+                <ul id="trades-table-print-filters" class="print-filters"></ul>
 
                 <table id="trades-table" class="display">
                     <thead>
@@ -377,6 +373,10 @@
                 </div>
             </div>
             <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">
+                <h3>Отчет по процентным ставкам</h3>
+
+                <ul id="report-table-print-filters" class="print-filters"></ul>
+
                 <div style="margin: 1em">
                     <table id="report-table" class="display">
                         <thead>
@@ -387,9 +387,9 @@
                                 <th>Однодневная<br/> процентная ставка <i>r<sub>k</sub></i></th>
                                 <th>
                                     Логарифм изменения <i>r<sub>k</sub></i><br/> за два торговых дня<br/>
-                                    <small>
+<!--                                     <small>
                                         <i>x<sub>k</sub> = lg(r<sub>k</sub>(i) ∕ r<sub>k</sub>(i&minus;2))</i>
-                                    </small>
+                                    </small> -->
                                 </th>
                             </tr>
                         </thead>
@@ -422,7 +422,7 @@
                 </div>
             </div>
             <div class="tab-pane" id="summary" role="tabpanel" aria-labelledby="summary-tab">
-                <h3>Статистика по изменению процентной ставки за два торговых дня</h3>
+                <h3>Статистика по изменению процентной ставки</h3>
 
                 <div id="summary-alert" class="alert alert-danger" style="display: none;"></div>
 
