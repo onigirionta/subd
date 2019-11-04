@@ -334,9 +334,29 @@ $(document).ready(function () {
         $('#trades-edit-alert').hide();
         var td = $("#trades-table tr.selected td");
         var name = td[0].innerText;
+        var torg_date = td[1].innerText;
+
+        $.ajax({
+            method: "GET",
+            url: "/polls/futures",
+            success: function(ajax) {
+                ajax = JSON.parse(ajax);
+                // console.log(typeof(ajax));
+
+                var combo = $("#trades-edit-name-input");
+                combo.empty();
+                for (var i = 0; i < ajax.data.length; i++) {
+                    var name = ajax.data[i].pk;
+                    $(`<option value="${name}">${name}</option>`).appendTo(combo);
+                }
+                combo.selectize({
+                    selectOnTab: true
+                });
+            }
+        });
+
         $("#trades-edit-name-input").val(name);
         $("#trades-edit-original-name").val(name);
-        var torg_date = td[1].innerText;
         $("#trades-edit-torg-date-input").val(torg_date);
         $("#trades-edit-original-torg-date").val(torg_date);
         $("#trades-edit-day-end-input").val(td[2].innerText);

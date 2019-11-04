@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="lib/datatables/select.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="lib/datatables/scroller.dataTables.min.css">
     <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css"  crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="lib/selectize.css" />
     <style type="text/css">
     .collapsing {
         -webkit-transition: none;
@@ -338,7 +339,7 @@
                                 <input type="hidden" id="trades-edit-original-torg-date" />
                                 <div class="form-group">
                                     <label for="trades-edit-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="trades-edit-name-input">
+                                    <select class="form-control" id="trades-edit-name-input"></select>
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-torg-date-input" class="col-form-label">Дата торгов:</label>
@@ -482,6 +483,7 @@
     <script type="text/javascript" src="lib/datatables/dataTables.scroller.min.js"></script>
 
     <script type="text/javascript" src="lib/moment.js"></script>
+    <script type="text/javascript" src="lib/selectize.js"></script>
 
     <script type="text/javascript" src="script.js">
         
