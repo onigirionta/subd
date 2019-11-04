@@ -7,8 +7,10 @@ $(document).ready(function () {
         "tag": "futures",
         "scrollY":         "70vh",
         "scrollCollapse": true,
-        "paging": false,
+        "paging": true,
         "select": "single",
+        "deferRender":    true,
+        "scroller":       true,
 
         "language": {
             "url": "lib/datatables/Russian.json",
@@ -38,7 +40,7 @@ $(document).ready(function () {
         "tag": "trades",
         "scrollY":         "65vh",
         "scrollCollapse": true,
-        "paging": false,
+        "scroller": true,
         "select": "single",
 
         "language": {
@@ -201,6 +203,20 @@ $(document).ready(function () {
         };
     };
 
+    var navigateTo = function (table, matches) {
+        return function (ajax) {
+            var data = ajax.data;
+            for (var i = 0; i < data.length; i++) {
+                if (matches(data[i])) {
+                    var row = table.row(i, {order: "index"});
+                    row.select();
+                    row.scrollTo();
+                    break;
+                }
+            }
+        };
+    };
+
     $("#futures-create-button").click(function (e) {
         $("#futures-create-alert").hide();
     });
@@ -208,6 +224,7 @@ $(document).ready(function () {
     $("#futures-create-ok-button").click(function (e) {
         var code = $("#futures-create-code-input").val();
         var date = $("#futures-create-date-input").val();
+        var newName = code + "-" + moment(date).format('DDMMYY');
         var request = {
             "code" : 'SU' + code + 'RMFS',
             "date" : date
@@ -218,7 +235,7 @@ $(document).ready(function () {
             "data": JSON.stringify(request),
             "success": function (data, status, jq) {
                 $("#futuresCreateModal").modal('hide');
-                futuresTable.ajax.reload();
+                futuresTable.ajax.reload(navigateTo(futuresTable, function (item) { return item.pk == newName; }));
             },
             "error": displayError('futures-create-alert')
         });
@@ -249,6 +266,7 @@ $(document).ready(function () {
         var originalName = $("#futures-edit-original-name").val();
         var code = $("#futures-edit-code-input").val();
         var date = $("#futures-edit-date-input").val();
+        var newName = code + "-" + moment(date).format('DDMMYY');
         var request = {
             "code" : 'SU' + code + 'RMFS',
             "date" : date
@@ -259,7 +277,7 @@ $(document).ready(function () {
             "data": JSON.stringify(request),
             "success": function() {
                 $("#futuresEditModal").modal('hide');
-                futuresTable.ajax.reload();
+                futuresTable.ajax.reload(navigateTo(futuresTable, function (item) { return item.pk == newName; }));
             },
             "error": displayError('futures-edit-alert')
         });
@@ -293,7 +311,8 @@ $(document).ready(function () {
             "data": JSON.stringify(request),
             "success": function (data, status, jq) {
                 $("#tradesCreateModal").modal('hide');
-                tradesTable.ajax.reload();
+                tradesTable.ajax.reload(
+                    navigateTo(tradesTable, function (item) { return (item.pk == name) && item.fields.torg_date == torg_date; }));
             },
             "error": displayError('trades-create-alert')
         });
@@ -352,7 +371,10 @@ $(document).ready(function () {
             "data": JSON.stringify(request),
             "success": function() {
                 $("#tradesEditModal").modal('hide');
-                tradesTable.ajax.reload();
+                tradesTable.ajax.reload(
+                    navigateTo(tradesTable, function (item) {
+                        return (item.pk == name) && item.fields.torg_date == torg_date;
+                    }));
             },
             "error": displayError('trades-edit-alert')
         });
