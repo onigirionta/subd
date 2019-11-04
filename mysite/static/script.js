@@ -11,7 +11,26 @@ $(document).ready(function () {
         "select": "single",
         "deferRender":    true,
         "scroller":       true,
-
+        "dom": 'Bfrtip',
+        "buttons":[
+            {
+                extend: "copy",
+                text: "Копировать всё"
+            },
+            {
+                extend: "excel",
+                text: "Выгрузить в Excel",
+                filename: "futures",
+                title: "Фьючерсы"
+            },
+            {
+                extend: "pdf",
+                text: "Выгрузить PDF",
+                filename: "futures",
+                title: "Фьючерсы",
+                orientation: "portrait"
+            }
+        ],
         "language": {
             "url": "lib/datatables/Russian.json",
             "decimal": ","
@@ -42,7 +61,26 @@ $(document).ready(function () {
         "scrollCollapse": true,
         "scroller": true,
         "select": "single",
-
+        "dom": 'Bfrtip',
+        "buttons": [
+            {
+                extend: "copy",
+                text: "Копировать всё"
+            },
+            {
+                extend: "excel",
+                text: "Выгрузить в Excel",
+                filename: "trades",
+                title: "Торги"
+            },
+            {
+                extend: "pdf",
+                text: "Выгрузить PDF",
+                filename: "trades",
+                title: "Торги",
+                orientation: "landscape"
+            }
+        ],
         "language": {
             "url": "lib/datatables/Russian.json",
             "decimal": ","
@@ -96,6 +134,26 @@ $(document).ready(function () {
         "scrollY":         "70vh",
         "scrollCollapse": true,
         "paging": false,
+        "dom": 'Bfrtip',
+        "buttons":[
+            {
+                extend: "copy",
+                text: "Копировать всё"
+            },
+            {
+                extend: "excel",
+                text: "Выгрузить в Excel",
+                filename: "report",
+                title: "Отчёт"
+            },
+            {
+                extend: "pdf",
+                text: "Выгрузить PDF",
+                filename: "report",
+                title: "Отчёт",
+                orientation: "landscape"
+            }
+        ],
 
         "language": {
             "url": "lib/datatables/Russian.json",
@@ -150,6 +208,26 @@ $(document).ready(function () {
             "url": "lib/datatables/Russian.json",
             "decimal": ","
         },
+        "dom": 'Bfrtip',
+        "buttons":[
+            {
+                extend: "copy",
+                text: "Копировать всё"
+            },
+            {
+                extend: "excel",
+                text: "Выгрузить в Excel",
+                filename: "summary",
+                title: "Исследование"
+            },
+            {
+                extend: "pdf",
+                text: "Выгрузить PDF",
+                filename: "summary",
+                title: "Исследование",
+                orientation: "landscape"
+            }
+        ],
         "select": "single",
         "saveState": true,
         "columns": [
