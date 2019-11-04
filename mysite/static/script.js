@@ -111,6 +111,16 @@ $(document).ready(function () {
                 "data": "fields.quotation",
                 "className": "dt-right",
                 "type": "num"
+            },  
+            {
+                "data": "fields.min_quot",
+                "className": "dt-right",
+                "type": "num"
+            },  
+            {
+                "data": "fields.max_quot",
+                "className": "dt-right",
+                "type": "num"
             },
             { 
                 "data": "fields.torg_date",

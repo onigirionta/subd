@@ -28,6 +28,8 @@ class Report(models.Model):
 
     name = models.CharField(primary_key=True, max_length=20)
     quotation = models.DecimalField(max_digits=5, decimal_places=2)
+    min_quot = models.DecimalField(max_digits=5, decimal_places=2)
+    max_quot = models.DecimalField(max_digits=5, decimal_places=2)
     torg_date = models.DateField()
     rk = models.FloatField()
     xk = models.FloatField()
