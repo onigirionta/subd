@@ -28,7 +28,13 @@ $(document).ready(function () {
                 text: "Выгрузить PDF",
                 filename: "futures",
                 title: "Фьючерсы",
-                orientation: "portrait"
+                orientation: "portrait",
+                customize: function (doc) {
+                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
+                    doc.footer = function (currentPage, pageCount) {
+                        return {'text' : currentPage.toString() + ' of ' + pageCount, 'alignment' : 'center'};
+                    }
+                }
             }
         ],
         "language": {
@@ -78,7 +84,13 @@ $(document).ready(function () {
                 text: "Выгрузить PDF",
                 filename: "trades",
                 title: "Торги",
-                orientation: "landscape"
+                orientation: "landscape",
+                customize: function (doc) {
+                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
+                    doc.footer = function (currentPage, pageCount) {
+                        return {'text' : currentPage.toString() + ' of ' + pageCount, 'alignment' : 'center'};
+                    }
+                }
             }
         ],
         "language": {
@@ -151,7 +163,13 @@ $(document).ready(function () {
                 text: "Выгрузить PDF",
                 filename: "report",
                 title: "Отчёт",
-                orientation: "landscape"
+                orientation: "landscape",
+                customize: function (doc) {
+                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
+                    doc.footer = function (currentPage, pageCount) {
+                        return {'text' : currentPage.toString() + ' of ' + pageCount, 'alignment' : 'center'};
+                    }
+                }
             }
         ],
 
@@ -225,7 +243,13 @@ $(document).ready(function () {
                 text: "Выгрузить PDF",
                 filename: "summary",
                 title: "Исследование",
-                orientation: "landscape"
+                orientation: "landscape",
+                customize: function (doc) {
+                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
+                    doc.footer = function (currentPage, pageCount) {
+                        return {'text' : currentPage.toString() + ' of ' + pageCount, 'alignment' : 'center'};
+                    }
+                }
             }
         ],
         "select": "single",

@@ -205,53 +205,55 @@
 
                 <ul id="trades-table-print-filters" class="print-filters"></ul>
 
-                <table id="trades-table" class="display">
-                    <thead>
-                        <tr>
-                            <th>Фьючерс</th>
-                            <th>Дата торгов</th>
-                            <th>Дата погашения</th>
-                            <th>Текущая цена*</th>
-                            <th>Минимальная цена*</th>
-                            <th>Максимальная цена*</th>
-                            <th>Число проданных</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>
-                                <input type="text" id="trades-name-filter" placeholder="Фьючерс" size="12"/>
-                            </th>
-                            <th>
-                                <input type="date" id="trades-date-filter-from"/>
-                                <input type="date" id="trades-date-filter-to"/>
-                            </th>
-                            <th>
-                                <input type="date" id="trades-expiration-filter-from"/>
-                                <input type="date" id="trades-expiration-filter-to"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-quotation-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-quotation-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-min-quot-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-min-quot-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-max-quot-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-max-quot-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-quantity-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-quantity-filter-to" placeholder="до" size="6"/>
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
-                <p>* в процентах от номинальной цены ценной бумаги</p>
+                <div style="margin: 1em">
+                    <table id="trades-table" class="display">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Дата торгов</th>
+                                <th>Дата погашения</th>
+                                <th>Текущая цена*</th>
+                                <th>Минимальная цена*</th>
+                                <th>Максимальная цена*</th>
+                                <th>Число проданных</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <input type="text" id="trades-name-filter" placeholder="Фьючерс" size="12"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="trades-date-filter-from"/>
+                                    <input type="date" id="trades-date-filter-to"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="trades-expiration-filter-from"/>
+                                    <input type="date" id="trades-expiration-filter-to"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-quotation-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-quotation-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-min-quot-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-min-quot-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-max-quot-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-max-quot-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-quantity-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-quantity-filter-to" placeholder="до" size="6"/>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p>* в процентах от номинальной цены ценной бумаги</p>
+                </div>
 
                 <!-- Modal-trades-delete -->
                 <div class="modal" id="tradesDeleteModal" tabindex="-1" role="dialog" aria-labelledby="tradesDeleteModalLabel" aria-hidden="true">
