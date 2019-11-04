@@ -195,6 +195,25 @@ $(document).ready(function () {
 
     //futures-buttons-functions
 
+    var autoComplete = function(id){
+        $.ajax({
+            method: "GET",
+            url: "/polls/futures",
+            success: function(ajax) {
+                ajax = JSON.parse(ajax);
+                var combo = $(id);
+                combo.empty();
+                for (var i = 0; i < ajax.data.length; i++) {
+                    var name = ajax.data[i].pk;
+                    $(`<option value="${name}">${name}</option>`).appendTo(combo);
+                }
+                combo.selectize({
+                    selectOnTab: true
+                });
+            }
+        });
+    };
+
     var displayError = function(id) {
         return function (xhr, textStatus, errorThrown) {
             var alert = $('#' + id);
@@ -286,6 +305,7 @@ $(document).ready(function () {
      //trades-buttons-functions
     $("#trades-create-button").click(function (e) {
         $("#trades-create-alert").hide();
+        autoComplete("#trades-create-name-input");
     });
 
     $("#trades-create-ok-button").click(function (e) {
@@ -330,30 +350,15 @@ $(document).ready(function () {
         });
     });
 
+    
+
     $("#trades-edit-button").click(function (e) {
         $('#trades-edit-alert').hide();
         var td = $("#trades-table tr.selected td");
         var name = td[0].innerText;
         var torg_date = td[1].innerText;
 
-        $.ajax({
-            method: "GET",
-            url: "/polls/futures",
-            success: function(ajax) {
-                ajax = JSON.parse(ajax);
-                // console.log(typeof(ajax));
-
-                var combo = $("#trades-edit-name-input");
-                combo.empty();
-                for (var i = 0; i < ajax.data.length; i++) {
-                    var name = ajax.data[i].pk;
-                    $(`<option value="${name}">${name}</option>`).appendTo(combo);
-                }
-                combo.selectize({
-                    selectOnTab: true
-                });
-            }
-        });
+        autoComplete("#trades-edit-name-input");
 
         $("#trades-edit-name-input").val(name);
         $("#trades-edit-original-name").val(name);
