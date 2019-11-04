@@ -267,6 +267,10 @@ $(document).ready(function () {
             {
                 "data": "fields.normal",
                 "className": "dt-center"
+            },
+            {
+                "data": "fields.hypothesis",
+                "className": "dt-center"
             }
         ]
     });
@@ -483,14 +487,20 @@ $(document).ready(function () {
         });
     });
 
+    $('#market-hypothesis').click(function(e){
+
+    });
+
     $("#summary-button").click(function (e){
         $("#summary-alert").hide();
         var dateFrom = $("#summary-date-from-input").val();
         var dateTo = $("#summary-date-to-input").val();
+        var prob = $("#summary-probability-input").val();
+        var coef = $("#summary-coef-input").val();
         $.ajax({
             "method": "GET",
             "dataType": "json",
-            "url": `/polls/summary?from=${dateFrom}&to=${dateTo}`,
+            "url": `/polls/summary?from=${dateFrom}&to=${dateTo}&prob=${prob}&coef=${coef}`,
             "success": function (data) {
                 summaryTable.clear();
                 summaryTable.rows.add(data);

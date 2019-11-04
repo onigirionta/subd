@@ -12,6 +12,7 @@ import json
 import numpy
 from scipy.stats import shapiro
 import csv
+import math
 
 from .models import Futures, Trades, Report, Summary
 
@@ -200,11 +201,17 @@ def summary(request):
         except:
             return HttpResponse('Неверный формат данных.', status=400)
 
+        try:
+            prob = float(request.GET.get("prob"))
+            coef = float(request.GET.get("coef"))
+        except:
+            return HttpResponse('Неверный формат данных.', status=400)    
+
         if date_from > date_to:
             return HttpResponse('Начало периода не может быть позже окончания.', status=422)
 
         query = '''
-select name, avg(xk),  stddev(xk), variance(xk), min(xk), max(xk), count(xk), NULL as normal
+select name, avg(xk),  stddev(xk), variance(xk), min(xk), max(xk), count(xk), NULL as normal, NULL as hypothesis
 from calc
 where 
     (torg_date between %s and %s)
@@ -230,8 +237,15 @@ group by name;
                     alpha = 0.05
                     _, p = shapiro(samples)
                     summary.normal = 'да' if p > alpha else 'нет'
+
+                    h = prob + coef*(1 - prob)
+                    z1 = 2*coef*(math.log(prob/(1-prob)) + 0.5*math.log(coef)) / (h*(coef - 1))
+                    z = float((samples[-1] - numpy.mean(samples))**2)
+                    apost_prob =  1 / (1 + math.exp(h*(coef-1)*(z-z1) / (2*coef)))
+                    summary.hypothesis = 'Спокойное' if apost_prob >= 0.5 else 'Нормальное'
                 except:
                     summary.normal = 'недостаточно точек'
+                    summary.hypothesis = 'недостаточно данных'
         except:
             return HttpResponse('Ошибка базы данных.', status=500)
 

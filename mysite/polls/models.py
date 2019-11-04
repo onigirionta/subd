@@ -43,4 +43,5 @@ class Summary(models.Model):
     max = models.FloatField()
     count = models.IntegerField()
     normal = models.TextField()
+    hypothesis = models.TextField()
         
