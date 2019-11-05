@@ -143,7 +143,7 @@ $(document).ready(function () {
 
     var reportTable = $('#report-table').DataTable({
         "tag": "report",
-        "scrollY":         "70vh",
+        "scrollY":         "60vh",
         "scrollCollapse": true,
         "paging": false,
         "dom": 'Bfrtip',
