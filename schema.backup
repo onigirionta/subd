@@ -1,0 +1,164 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.5
+-- Dumped by pg_dump version 11.5
+
+-- Started on 2019-11-05 17:57:20
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 197 (class 1259 OID 16432)
+-- Name: f_zb; Type: TABLE; Schema: public; Owner: ondatra
+--
+
+CREATE TABLE public.f_zb (
+    torg_date date,
+    name text,
+    day_end date,
+    quotation numeric(5,2),
+    min_quot numeric(5,2),
+    max_quot numeric(5,2),
+    num_contr integer
+);
+
+
+ALTER TABLE public.f_zb OWNER TO ondatra;
+
+--
+-- TOC entry 198 (class 1259 OID 16438)
+-- Name: zb; Type: TABLE; Schema: public; Owner: ondatra
+--
+
+CREATE TABLE public.zb (
+    name text,
+    base text,
+    exec_date date
+);
+
+
+ALTER TABLE public.zb OWNER TO ondatra;
+
+--
+-- TOC entry 201 (class 1259 OID 24712)
+-- Name: calc; Type: VIEW; Schema: public; Owner: ondatra
+--
+
+CREATE VIEW public.calc AS
+ SELECT f.name,
+    f.quotation,
+    f.min_quot,
+    f.max_quot,
+    f.torg_date,
+    f.rk,
+    COALESCE(ln((f.rk / lag(f.rk, 2) OVER w)), (0)::numeric) AS xk
+   FROM ( SELECT f_zb.name,
+            f_zb.quotation,
+            f_zb.min_quot,
+            f_zb.max_quot,
+            f_zb.torg_date,
+            (ln((f_zb.quotation / (100)::numeric)) / ((zb.exec_date - f_zb.day_end))::numeric) AS rk
+           FROM public.f_zb,
+            public.zb
+          WHERE (f_zb.name = zb.name)) f
+  WINDOW w AS (PARTITION BY f.name ORDER BY f.torg_date);
+
+
+ALTER TABLE public.calc OWNER TO ondatra;
+
+--
+-- TOC entry 200 (class 1259 OID 24703)
+-- Name: messages; Type: TABLE; Schema: public; Owner: ondatra
+--
+
+CREATE TABLE public.messages (
+    id integer NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT now(),
+    sender inet DEFAULT inet_client_addr(),
+    message text
+);
+
+
+ALTER TABLE public.messages OWNER TO ondatra;
+
+--
+-- TOC entry 199 (class 1259 OID 24701)
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: ondatra
+--
+
+CREATE SEQUENCE public.messages_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.messages_id_seq OWNER TO ondatra;
+
+--
+-- TOC entry 2889 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ondatra
+--
+
+ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
+
+
+--
+-- TOC entry 2753 (class 2604 OID 24706)
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: ondatra
+--
+
+ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
+
+
+--
+-- TOC entry 2757 (class 2606 OID 24722)
+-- Name: f_zb un_pair; Type: CONSTRAINT; Schema: public; Owner: ondatra
+--
+
+ALTER TABLE ONLY public.f_zb
+    ADD CONSTRAINT un_pair UNIQUE (name, torg_date);
+
+
+--
+-- TOC entry 2759 (class 2606 OID 24677)
+-- Name: zb zb_name_key; Type: CONSTRAINT; Schema: public; Owner: ondatra
+--
+
+ALTER TABLE ONLY public.zb
+    ADD CONSTRAINT zb_name_key UNIQUE (name);
+
+
+--
+-- TOC entry 2760 (class 2606 OID 24683)
+-- Name: f_zb FK_name; Type: FK CONSTRAINT; Schema: public; Owner: ondatra
+--
+
+ALTER TABLE ONLY public.f_zb
+    ADD CONSTRAINT "FK_name" FOREIGN KEY (name) REFERENCES public.zb(name) NOT VALID;
+
+
+-- Completed on 2019-11-05 17:57:20
+
+--
+-- PostgreSQL database dump complete
+--
+
