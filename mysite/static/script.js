@@ -1,7 +1,32 @@
+var autoComplete = function(id){
+    $.ajax({
+        method: "GET",
+        url: "/polls/futures",
+        success: function(ajax) {
+            ajax = JSON.parse(ajax);
+            var combo = $(id);
+            combo.empty();
+            for (var i = 0; i < ajax.data.length; i++) {
+                var name = ajax.data[i].pk;
+                $(`<option value="${name}">${name}</option>`).appendTo(combo);
+            }
+            combo.selectize({
+                selectOnTab: true
+            });
+        }
+    });
+};
+
+
 $(document).ready(function () {
+    autoComplete("#trades-name-filter");
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
     });
+
+    var print_fiter_futures = ['', '', ''];
+    var print_fiter_trade = ['', '', '', '', '', '', ''];
+    var print_fiter_report = ['', '', '', '', '', '', ''];
 
     var futuresTable = $('#futures-table').DataTable({
         "tag": "futures",
@@ -27,7 +52,15 @@ $(document).ready(function () {
                 extend: "pdf",
                 text: "Выгрузить PDF",
                 filename: "futures",
-                title: "Фьючерсы",
+                title: function () {
+                    var res_filter = '';
+                    for (var i = 0; i < print_fiter_futures.length; i++) {
+                        if(print_fiter_futures[i]){
+                            res_filter += print_fiter_futures[i];
+                        }
+                    }
+                    return 'Фьючерсы\n\n' + res_filter;
+                },
                 orientation: "portrait",
                 customize: function (doc) {
                     doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
@@ -49,7 +82,7 @@ $(document).ready(function () {
                 "data": "pk",
                 "className": "dt-left"
             },
-            { 
+            {
                 "data": "fields.base",
                 "className": "dt-left"
             },
@@ -83,7 +116,15 @@ $(document).ready(function () {
                 extend: "pdf",
                 text: "Выгрузить PDF",
                 filename: "trades",
-                title: "Торги",
+                title: function () {
+                    var res_filter = '';
+                    for (var i = 0; i < print_fiter_trade.length; i++) {
+                        if(print_fiter_trade[i]){
+                            res_filter += print_fiter_trade[i];
+                        }
+                    }
+                    return 'Торги\n\n' + res_filter
+                },
                 orientation: "landscape",
                 customize: function (doc) {
                     doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
@@ -162,10 +203,18 @@ $(document).ready(function () {
                 extend: "pdf",
                 text: "Выгрузить PDF",
                 filename: "report",
-                title: "Отчёт",
+                title: function () {
+                    var res_filter = '';
+                    for (var i = 0; i < print_fiter_report.length; i++) {
+                        if(print_fiter_report[i]){
+                            res_filter += print_fiter_report[i];
+                        }
+                    }
+                    return 'Отчёт\n\n' + res_filter
+                },
                 orientation: "landscape",
                 customize: function (doc) {
-                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss'), 'alignment': 'right'};
+                    doc.header = {'text': moment().format('YYYY MMMM DD, HH:mm:ss') + '\n\n' + res_filter, 'alignment': 'right'};
                     doc.footer = function (currentPage, pageCount) {
                         return {'text' : currentPage.toString() + ' of ' + pageCount, 'alignment' : 'center'};
                     }
@@ -189,18 +238,18 @@ $(document).ready(function () {
                 "data": "fields.quotation",
                 "className": "dt-right",
                 "type": "num"
-            },  
+            },
             {
                 "data": "fields.min_quot",
                 "className": "dt-right",
                 "type": "num"
-            },  
+            },
             {
                 "data": "fields.max_quot",
                 "className": "dt-right",
                 "type": "num"
             },
-            { 
+            {
                 "data": "fields.torg_date",
                 "className": "dt-right",
                 "type": "date"
@@ -300,25 +349,6 @@ $(document).ready(function () {
     });
 
     //futures-buttons-functions
-
-    var autoComplete = function(id){
-        $.ajax({
-            method: "GET",
-            url: "/polls/futures",
-            success: function(ajax) {
-                ajax = JSON.parse(ajax);
-                var combo = $(id);
-                combo.empty();
-                for (var i = 0; i < ajax.data.length; i++) {
-                    var name = ajax.data[i].pk;
-                    $(`<option value="${name}">${name}</option>`).appendTo(combo);
-                }
-                combo.selectize({
-                    selectOnTab: true
-                });
-            }
-        });
-    };
 
     var displayError = function(id) {
         return function (xhr, textStatus, errorThrown) {
@@ -456,14 +486,15 @@ $(document).ready(function () {
         });
     });
 
-    
+
 
     $("#trades-edit-button").click(function (e) {
         $('#trades-edit-alert').hide();
+
         var td = $("#trades-table tr.selected td");
+
         var name = td[0].innerText;
         var torg_date = td[1].innerText;
-
         autoComplete("#trades-edit-name-input");
 
         $("#trades-edit-name-input").val(name);
@@ -564,14 +595,40 @@ $(document).ready(function () {
             series: [{
                 name: 'Изменение процентной ставки за два дня'
             }]
-        });                
+        });
     });
 
-    var attachTextFilter = function (filterId, table, columnIndex, caption) {
+    var formation_res_st = function (val_from, val_to, caption, print_array, position) {
+            if (val_from){
+                caption += ' от \"' + val_from + '\"';
+            }
+            if (val_to){
+                caption += ' до \"' + val_to + '\"';
+            }
+            if (val_from || val_from) {
+                print_array[position] = caption + '\n';
+            } else {
+                print_array[position] = '';
+            }
+    };
+
+    var attachTextFilter = function (filterId, table, columnIndex, caption, print_array) {
         var tableId = table.settings()[0].sTableId;
 
         var filter = $('#' + filterId);
+        var value = filter.val();
+            if (value) {
+                print_array[columnIndex] = caption + ' включает - \"' + value + '\"\n';
+            } else {
+                print_array[columnIndex] = '';
+            }
         filter.on('change keyup clear', function() {
+            var value = filter.val();
+            if (value) {
+                print_array[columnIndex] = caption + ' включает - \"' + value + '\"\n';
+            } else {
+                print_array[columnIndex] = '';
+            }
             table.draw();
         });
 
@@ -583,7 +640,7 @@ $(document).ready(function () {
 
             var value = filter.val();
             if (value) {
-                $(`<li>${caption} включает &laquo;${value}&raquo;</li>`).appendTo(print);
+                $(`<lapi>${caption} включает &laquo;${value}&raquo;</li>`).appendTo(print);
             }
         });
 
@@ -598,13 +655,22 @@ $(document).ready(function () {
         return filter;
     };
 
-    var attachDateFilter = function (filterBaseId, table, columnIndex, caption) {
+    var attachDateFilter = function (filterBaseId, table, columnIndex, caption, print_array, ) {
         var tableId = table.settings()[0].sTableId;
 
         var filterFrom = $('#' + filterBaseId + '-from');
         var filterTo = $('#' + filterBaseId + '-to');
-        filterFrom.change(function() { table.draw(); });
-        filterTo.change(function() { table.draw(); });
+
+        formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, columnIndex);
+
+        filterFrom.change(function() {
+            formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, columnIndex);
+            table.draw();
+        });
+        filterTo.change(function() {
+            formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, columnIndex);
+            table.draw();
+        });
 
         $(window).on('beforeprint', function () {
             var print = $(`#${tableId}-print-filters`)[0];
@@ -651,15 +717,21 @@ $(document).ready(function () {
             });
     };
 
-    var attachRangeFilter = function (filterBaseId, table, columnIndex, caption) {
+    var attachRangeFilter = function (filterBaseId, table, columnIndex, caption, print_array, position) {
         var tableId = table.settings()[0].sTableId;
 
         var filterFrom = $('#' + filterBaseId + '-from');
         var filterTo = $('#' + filterBaseId + '-to');
+        formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, position);
+        filterFrom.on('change keyup clear', function() {
+            formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, position);
+            table.draw();
+        });
+        filterTo.on('change keyup clear', function() {
+            formation_res_st(filterFrom.val(), filterTo.val(), caption, print_array, position);
+            table.draw();
+        });
 
-        filterFrom.on('change keyup clear', function() { table.draw(); });
-        filterTo.on('change keyup clear', function() { table.draw(); });
-        
         $(window).on('beforeprint', function () {
             var print = $(`#${tableId}-print-filters`)[0];
             if (!print) {
@@ -709,26 +781,26 @@ $(document).ready(function () {
         $('#futures-table-print-filters').empty();
         $('#trades-table-print-filters').empty();
         $('#report-table-print-filters').empty();
-    })
+    });
 
     //futures filtres
-    var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0, "Имя фьючерса");
-    var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, 1, "Код ценной бумаги");
-    attachDateFilter('futures-date-filter', futuresTable, 2, "Дата исполнения");
+    var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, 0, "Имя фьючерса", print_fiter_futures);
+    var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, 1, "Код ценной бумаги", print_fiter_futures);
+    attachDateFilter('futures-date-filter', futuresTable, 2, "Дата исполнения", print_fiter_futures);
     //trades filtres
-    var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, 0, "Имя фьючерса");
-    attachDateFilter('trades-date-filter', tradesTable, 1, "Дата торгов");
-    attachDateFilter('trades-expiration-filter', tradesTable, 2, "Дата погашения");
-    attachRangeFilter('trades-quotation-filter', tradesTable, 3, "Цена");
-    attachRangeFilter('trades-min-quot-filter', tradesTable, 4, "Минимальная цена");
-    attachRangeFilter('trades-max-quot-filter', tradesTable, 5, "Максимальная цена");
-    attachRangeFilter('trades-quantity-filter', tradesTable, 6, "Количество проданных");
+    var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, 0, "Имя фьючерса", print_fiter_trade);
+    attachDateFilter('trades-date-filter', tradesTable, 1, "Дата торгов", print_fiter_trade);
+    attachDateFilter('trades-expiration-filter', tradesTable, 2, "Дата погашения", print_fiter_trade);
+    attachRangeFilter('trades-quotation-filter', tradesTable, 3, "Цена", print_fiter_trade);
+    attachRangeFilter('trades-min-quot-filter', tradesTable, 4, "Минимальная цена", print_fiter_trade);
+    attachRangeFilter('trades-max-quot-filter', tradesTable, 5, "Максимальная цена", print_fiter_trade);
+    attachRangeFilter('trades-quantity-filter', tradesTable, 6, "Количество проданных", print_fiter_trade);
     //report filtres
-    var reportNameFilter = attachTextFilter('report-name-filter', reportTable, 0, "Имя фьючерса");
-    attachRangeFilter('report-quotation-filter', reportTable, 1, "Цена");
-    attachDateFilter('report-torg-date-filter', reportTable, 2, "Дата торгов");
-    attachRangeFilter('report-rk-filter', reportTable, 3, "Однодневная процентная ставка");
-    attachRangeFilter('report-xk-filter', reportTable, 4, "Логарифм изменения однодневной процентной ставки");
+    var reportNameFilter = attachTextFilter('report-name-filter', reportTable, 0, "Имя фьючерса", print_fiter_report);
+    attachRangeFilter('report-quotation-filter', reportTable, 1, "Цена", print_fiter_report);
+    attachDateFilter('report-torg-date-filter', reportTable, 4, "Дата торгов", print_fiter_report);
+    attachRangeFilter('report-rk-filter', reportTable, 5, "Однодневная процентная ставка", print_fiter_report);
+    attachRangeFilter('report-xk-filter', reportTable, 6, "Логарифм изменения однодневной процентной ставки", print_fiter_report);
 });
 
 var hash = window.location.hash;
