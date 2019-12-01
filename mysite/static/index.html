@@ -2,17 +2,36 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="lib/datatables/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/datatables/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/datatables/scroller.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/datatables/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css"  crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="lib/selectize.css" />
     <style type="text/css">
     .collapsing {
         -webkit-transition: none;
         transition: none;
         display: none;
     }
-    .dataTables_filter {
+    .dataTables_filter, .dts_label {
         display: none;
+    }
+    #summary-table_info {
+        display: none;
+    }
+    .select-info {
+        display: none;
+    }
+    @media screen {
+        .print-filters {
+            display: none;
+        }
+    }
+    @media print {
+        nav, tfoot, .buttons, #summary-button {
+            display: none;
+        }
     }
 </style>
 </head>
@@ -27,10 +46,13 @@
                     <a href="#trades" class="nav-link" id="trades-tab" data-toggle="tab" role="tab" aria-controls="trades">Торги</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="#market" class="nav-link" id="market-tab" data-toggle="tab" role="tab" aria-controls="market">Рынок</a>
+                    <a href="#report" class="nav-link" id="report-tab" data-toggle="tab" role="tab" aria-controls="report">Отчёт по фьючерсу</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="#report" class="nav-link" id="report-tab" data-toggle="tab" role="tab" aria-controls="report">Отчет</a>
+                    <a href="#summary" class="nav-link" id="summary-tab" data-toggle="tab" role="tab" aria-controls="summary">Сводка по датам</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link" href="help.pdf" target="_blank">Помощь</a>
                 </li>
             </ul>
         </div>
@@ -38,39 +60,22 @@
     <main role="main" class="container">
         <div class="tab-content">
             <div class="tab-pane show active" id="futures" role="tabpanel" aria-labelledby="futures-tab">
-                <!--
-                <div class="card">
-                    <div class="card-header" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Фильтры</div>
-                    <div class="card-body collapse show" id="collapseOne">
-                        <div>
-                            <label for="futures-name-filter">Фьючерс:</label>
-                            
-                        </div>
-                        <div>
-                            <label for="futures-code-filter">Код серии:</label>
-                            <input type="text" id="futures-code-filter" />
-                        </div>
-                        <div>
-                            <label for="futures-date-filter-from">Дата исполнения: от</label>
-                            <input type="date" id="futures-date-filter-from"/>
-                            <label for="futures-date-filter-to">до</label>
-                            <input type="date" id="futures-date-filter-to"/>
-                        </div>
-                    </div>
+                <h3>Отчет по фьючерсам</h3>
+
+                <!-- futures-buttons -->
+                <div class="buttons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
+                        Добавить новую запись
+                    </button>
+                    <button type="button" class="btn" data-toggle="modal" id="futures-edit-button" data-target="#futuresEditModal">
+                        Редактировать запись
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" id="futures-delete-button" data-target="#futuresDeleteModal">
+                        Удалить выбранную запись
+                    </button>
                 </div>
-                -->
-                 <!-- futures-buttons -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" id="futures-create-button" data-target="#futuresCreateModal">
-                    Добавить новую запись
-                </button>
 
-                <button type="button" class="btn" data-toggle="modal" id="futures-edit-button" data-target="#futuresEditModal">
-                    Редактировать запись
-                </button>
-
-                <button type="button" class="btn btn-danger" data-toggle="modal" id="futures-delete-button" data-target="#futuresDeleteModal">
-                    Удалить выбранную запись
-                </button>
+                <ul id="futures-table-print-filters" class="print-filters"></ul>
 
                 <div style="margin: 1em">
                     <table id="futures-table" class="display">
@@ -134,17 +139,15 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="futures-create-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="futures-create-name-input">
-                                </div>
+                                <div class="alert alert-danger" style="display: none" role="alert" id="futures-create-alert"></div>
                                 <div class="form-group">
                                     <label for="futures-create-code-input" class="col-form-label">Код серии:</label>
-                                    <input type="text" class="form-control" id="futures-create-code-input">
+                                    <input type="text" class="form-control" id="futures-create-code-input" pattern="^[0-9]{5}$" title="5 цифр">
                                 </div>
                                 <div class="form-group">
                                     <label for="futures-create-date-input" class="col-form-label">Дата исполнения:</label>
-                                    <input type="text" class="form-control" id="futures-create-date-input">
+                                    <input type="date" class="form-control" id="futures-create-date-input">
+                                    <!-- <input type="text" class="form-control" id="futures-create-date-input" pattern="^\d{4}-\d{2}-\d{2}$" placeholder="гггг-мм-дд"> -->
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -168,17 +171,14 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id="futures-edit-original-name" />
-                                <div class="form-group">
-                                    <label for="futures-edit-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="futures-edit-name-input">
-                                </div>
+                                <div class="alert alert-danger" style="display: none" role="alert" id="futures-edit-alert"></div>
                                 <div class="form-group">
                                     <label for="futures-edit-code-input" class="col-form-label">Код серии:</label>
-                                    <input type="text" class="form-control" id="futures-edit-code-input">
+                                    <input type="text" class="form-control" id="futures-edit-code-input" pattern="^[0-9]{5}$" title="5 цифр">
                                 </div>
                                 <div class="form-group">
                                     <label for="futures-edit-date-input" class="col-form-label">Дата исполнения:</label>
-                                    <input type="text" class="form-control" id="futures-edit-date-input">
+                                    <input type="date" class="form-control" id="futures-edit-date-input">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -191,67 +191,72 @@
             </div>
 
             <div class="tab-pane show" id="trades" role="tabpanel" aria-labelledby="trades-tab">
+                <h3>Отчет по торгам</h3>
 
-                  <!-- trades-buttons -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" id="trades-create-button" data-target="#tradesCreateModal">
-                    Добавить новую запись
-                </button>
+                <!-- trades-buttons -->
+                <div class="buttons">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" id="trades-create-button" data-target="#tradesCreateModal">
+                        Добавить новую запись
+                    </button>
+                    <button type="button" class="btn" data-toggle="modal" id="trades-edit-button" data-target="#tradesEditModal">
+                        Редактировать запись
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" id="trades-delete-button" data-target="#tradesDeleteModal">
+                        Удалить выбранную запись
+                    </button>
+                </div>
 
-                <button type="button" class="btn" data-toggle="modal" id="trades-edit-button" data-target="#tradesEditModal">
-                    Редактировать запись
-                </button>
+                <ul id="trades-table-print-filters" class="print-filters"></ul>
 
-                <button type="button" class="btn btn-danger" data-toggle="modal" id="trades-delete-button" data-target="#tradesDeleteModal">
-                    Удалить выбранную запись
-                </button>
-
-                <table id="trades-table" class="display">
-                    <thead>
-                        <tr>
-                            <th>Фьючерс</th>
-                            <th>Дата торгов</th>
-                            <th>Дата погашения</th>
-                            <th>Текущая цена*</th>
-                            <th>Минимальная цена*</th>
-                            <th>Максимальная цена*</th>
-                            <th>Число проданных</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>
-                                <input type="text" id="trades-name-filter" placeholder="Фьючерс" size="12"/>
-                            </th>
-                            <th>
-                                <input type="date" id="trades-date-filter-from"/>
-                                <input type="date" id="trades-date-filter-to"/>
-                            </th>
-                            <th>
-                                <input type="date" id="trades-expiration-filter-from"/>
-                                <input type="date" id="trades-expiration-filter-to"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-quotation-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-quotation-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-min-quot-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-min-quot-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-max-quot-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-max-quot-filter-to" placeholder="до" size="6"/>
-                            </th>
-                            <th>
-                                <input type="text" id="trades-quantity-filter-from" placeholder="от" size="6"/>
-                                <input type="text" id="trades-quantity-filter-to" placeholder="до" size="6"/>
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
-                <p>* в процентах от номинальной цены ценной бумаги</p>
+                <div style="margin: 1em">
+                    <table id="trades-table" class="display">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Дата торгов</th>
+                                <th>Дата погашения</th>
+                                <th>Текущая цена*</th>
+                                <th>Минимальная цена*</th>
+                                <th>Максимальная цена*</th>
+                                <th>Число проданных</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <input type="text" id="trades-name-filter" placeholder="Фьючерс" size="12"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="trades-date-filter-from"/>
+                                    <input type="date" id="trades-date-filter-to"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="trades-expiration-filter-from"/>
+                                    <input type="date" id="trades-expiration-filter-to"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-quotation-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-quotation-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-min-quot-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-min-quot-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-max-quot-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-max-quot-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="trades-quantity-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="trades-quantity-filter-to" placeholder="до" size="6"/>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p>* в процентах от номинальной цены ценной бумаги</p>
+                </div>
 
                 <!-- Modal-trades-delete -->
                 <div class="modal" id="tradesDeleteModal" tabindex="-1" role="dialog" aria-labelledby="tradesDeleteModalLabel" aria-hidden="true">
@@ -285,29 +290,30 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                <div class="alert alert-danger" style="display: none" role="alert" id="trades-create-alert"></div>
                                 <div class="form-group">
                                     <label for="trades-create-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="trades-create-name-input">
+                                    <select type="text" class="form-control" id="trades-create-name-input"></select>
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-torg-date-input" class="col-form-label">Дата торгов:</label>
-                                    <input type="text" class="form-control" id="trades-create-torg-date-input">
+                                    <input type="date" class="form-control" id="trades-create-torg-date-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-day-end-input" class="col-form-label">Дата погашения:</label>
-                                    <input type="text" class="form-control" id="trades-create-day-end-input">
+                                    <input type="date" class="form-control" id="trades-create-day-end-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-quotation-input" class="col-form-label">Котировка</label>
                                     <input type="text" class="form-control" id="trades-create-quotation-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-create-max-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-create-max-quot-input">
+                                    <label for="trades-create-min-quot-input" class="col-form-label">Минимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-create-min-quot-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-create-min-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-create-min-quot-input">
+                                    <label for="trades-create-max-quot-input" class="col-form-label">Максимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-create-max-quot-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-create-num-contr-input" class="col-form-label">Число проданных:</label>
@@ -334,31 +340,32 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+                                <div class="alert alert-danger" style="display: none" role="alert" id="trades-edit-alert"></div>
                                 <input type="hidden" id="trades-edit-original-name" />
                                 <input type="hidden" id="trades-edit-original-torg-date" />
                                 <div class="form-group">
                                     <label for="trades-edit-name-input" class="col-form-label">Фьючерс:</label>
-                                    <input type="text" class="form-control" id="trades-edit-name-input">
+                                    <select class="form-control" id="trades-edit-name-input"></select>
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-torg-date-input" class="col-form-label">Дата торгов:</label>
-                                    <input type="text" class="form-control" id="trades-edit-torg-date-input">
+                                    <input type="date" class="form-control" id="trades-edit-torg-date-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-day-end-input" class="col-form-label">Дата погашения:</label>
-                                    <input type="text" class="form-control" id="trades-edit-day-end-input">
+                                    <input type="date" class="form-control" id="trades-edit-day-end-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-quotation-input" class="col-form-label">Котировка</label>
                                     <input type="text" class="form-control" id="trades-edit-quotation-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="trades-edit-max-quot-input" class="col-form-label">Максимальная цена:</label>
-                                    <input type="text" class="form-control" id="trades-edit-max-quot-input">
-                                </div>
-                                <div class="form-group">
                                     <label for="trades-edit-min-quot-input" class="col-form-label">Минимальная цена:</label>
                                     <input type="text" class="form-control" id="trades-edit-min-quot-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="trades-edit-max-quot-input" class="col-form-label">Максимальная цена:</label>
+                                    <input type="text" class="form-control" id="trades-edit-max-quot-input">
                                 </div>
                                 <div class="form-group">
                                     <label for="trades-edit-num-contr-input" class="col-form-label">Число проданных:</label>
@@ -373,340 +380,142 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="market" role="tabpanel" aria-labelledby="market-tab">market</div>
-            <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">report</div>
+            <div class="tab-pane" id="report" role="tabpanel" aria-labelledby="report-tab">
+                <h3>Отчет по процентным ставкам</h3>
+
+                <ul id="report-table-print-filters" class="print-filters"></ul>
+
+                <div style="margin: 1em">
+                    <table id="report-table" class="display">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Цена</th>
+                                <th>Минимальная ставка</th>
+                                <th>Максимальная ставка</th>
+                                <th>Дата торгов</th>
+                                <th>Однодневная<br/> процентная ставка <i>r<sub>k</sub></i></th>
+                                <th>
+                                    Логарифм изменения <i>r<sub>k</sub></i><br/> за два торговых дня<br/>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <input type="text" id="report-name-filter" placeholder="Фьючерс" />
+                                </th>
+                                <th>
+                                    <input type="text" id="report-quotation-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-quotation-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="date" id="report-torg-date-filter-from" />
+                                    <input type="date" id="report-torg-date-filter-to" />
+                                </th>
+                                <th>
+                                    <input type="text" id="report-rk-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-rk-filter-to" placeholder="до" size="6"/>
+                                </th>
+                                <th>
+                                    <input type="text" id="report-xk-filter-from" placeholder="от" size="6"/>
+                                    <input type="text" id="report-xk-filter-to" placeholder="до" size="6"/>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                <h3>Статистика по изменению процентной ставки</h3>
+
+                <div id="summary-alert" class="alert alert-danger" style="display: none;"></div>
+
+                <div class="form-row">
+                    <div class="form-inline col-xs-3">
+                        <label for="summary-date-from-input" class="mr-2">Период от</label>
+                        <input type="date" class="form-control" id="summary-date-from-input">
+                    </div>
+                    <div class="form-inline col-xs-3">
+                        <label for="summary-date-to-input" class="mr-2">до</label>
+                        <input type="date" class="form-control" id="summary-date-to-input">
+                    </div>
+                    <button class="btn btn-primary ml-3" id="summary-button">Сформировать</button>
+                </div>
+
+                <div class="form-row">
+                    <a class="col-xs-2" data-toggle="collapse" href="#summary-extra-options" role="button" aria-expanded="false" aria-controls="summary-extra-options">Дополнительные параметры</a>
+                </div>
+
+                <div class="collapse" id="summary-extra-options">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-inline">
+                                <label for="summary-probability-input" class="mr-2">Вероятность:</label>
+                                <input type="number" value="0.3" min="0" max="1" step="0.01" class="form-control" id="summary-probability-input">
+                            </div>
+                            <div class="form-inline">
+                                <label for="summary-coef-input" class="ml-3 mr-2">Коэффициент:</label>
+                                <input type="number" value="10" class="form-control" id="summary-coef-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 1em">
+                    <table id="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Фьючерс</th>
+                                <th>Торгов</th>
+                                <th>Среднее</th>
+                                <th>Стандартное отклонение</th>
+                                <th>Дисперсия</th>
+                                <th>Минимум</th>
+                                <th>Максимум</th>
+                                <th>Нормальность</th>
+                                <th>Состояние рынка</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="summary-chart">Выберите фьючерс для отображения его исторических данных.</div>
+            </div>
         </div>
     </main>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="lib/jquery-3.3.1.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="lib/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="lib/highcharts/data.js"></script>
+    <script src="lib/highcharts/exporting.js"></script>  
+    <!-- optional -->                                 
+    <script src="lib/highcharts/offline-exporting.js"></script>  
+    <script src="lib/highcharts/export-data.js"></script>
 
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+    <script src="lib/bootstrap/popper.min.js"  crossorigin="anonymous"></script>
+    <script src="lib/bootstrap/bootstrap.min.js"  crossorigin="anonymous"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-            });
+    <script type="text/javascript" src="lib/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="lib/datatables/dataTables.select.min.js"></script>
+    <script type="text/javascript" src="lib/datatables/dataTables.scroller.min.js"></script>
 
-            var futuresTable = $('#futures-table').DataTable({
-                "tag": "futures",
-                "scrollY":         "70vh",
-                "scrollCollapse": true,
-                "paging": false,
-                "select": "single",
+    <script type="text/javascript" src="lib/moment.js"></script>
+    <script type="text/javascript" src="lib/selectize.js"></script>
+    <script type="text/javascript" src="lib/datatables/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="lib/datatables/buttons.html5.min.js"></script>
 
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
-                    "decimal": ","
-                },
-                "saveState": true,
-                // "searching": false,
-                "ajax": "/polls/futures",
-                "columns": [
-                    {
-                        "data": "pk"
-                    },
-                    { 
-                        "data": "fields.base"
-                    },
-                    {
-                        "data": "fields.exec_date",
-                        "type": "date"
-                    },
-                ]
-            });
+    <script type="text/javascript" src="lib/pdfmake/pdfmake.min.js"></script>
+    <script type="text/javascript" src="lib/pdfmake/vfs_fonts.js"></script>
+    <script type="text/javascript" src="lib/jszip.min.js"></script>
 
-            var tradesTable = $('#trades-table').DataTable({
-                "tag": "trades",
-                "scrollY":         "70vh",
-                "scrollCollapse": true,
-                "paging": false,
-                "select": "single",
-
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json",
-                    "decimal": ","
-                },
-                "saveState": true,
-                "ajax": "/polls/trades",
-                "columns": [
-                    {
-                        "data": "pk"
-                    },
-                    {
-                        "data": "fields.torg_date",
-                        "type": "date"
-                    },
-                    {
-                        "data": "fields.day_end",
-                        "type": "date"
-                    },
-                    {
-                        "data": "fields.quotation",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.min_quot",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.max_quot",
-                        "className": "dt-right"
-                    },
-                    {
-                        "data": "fields.num_contr",
-                        "className": "dt-right"
-                    },
-                ]
-            });
-
-            //futures-buttons-functions
-            $("#futures-create-ok-button").click(function (e) {
-                var name = $("#futures-create-name-input").val();
-                var code = $("#futures-create-code-input").val();
-                var date = $("#futures-create-date-input").val();
-                var request = {
-                    "name" : name,
-                    "code" : code,
-                    "date" : date
-                };
-                $.post(
-                    "/polls/futures",
-                    JSON.stringify(request),
-                    function (data, status, jq) {
-                        $("#futuresCreateModal").modal('hide');
-                        futuresTable.ajax.reload();
-                    });
-            });
-
-            $("#futures-delete-ok-button").click(function (e) {
-                var td = $("#futures-table tr.selected td:first-child()");
-                $.ajax({
-                    "method": "delete",
-                    "url": "/polls/futures/" + td.text(),
-                    "success": function() {
-                        $("#futuresDeleteModal").modal('hide');
-                        futuresTable.ajax.reload();
-                    }
-                });
-            });
-
-            $("#futures-edit-button").click(function (e) {
-                var td = $("#futures-table tr.selected td");
-                var name = td[0].innerText;
-                $("#futures-edit-name-input").val(name);
-                $("#futures-edit-original-name").val(name);
-                $("#futures-edit-code-input").val(td[1].innerText);
-                $("#futures-edit-date-input").val(td[2].innerText);
-            });
-
-            $("#futures-edit-ok-button").click(function (e) {
-                var originalName = $("#futures-edit-original-name").val();
-                var name = $("#futures-edit-name-input").val();
-                var code = $("#futures-edit-code-input").val();
-                var date = $("#futures-edit-date-input").val();
-                var request = {
-                    "name" : name,
-                    "code" : code,
-                    "date" : date
-                };
-                $.ajax({
-                    "method": "put",
-                    "url": "/polls/futures/" + originalName,
-                    "data": JSON.stringify(request),
-                    "success": function() {
-                        $("#futuresEditModal").modal('hide');
-                        futuresTable.ajax.reload();
-                    }
-                });
-            });
-
-             //trades-buttons-functions
-            $("#trades-create-ok-button").click(function (e) {
-                var name = $("#trades-create-name-input").val();
-                var torg_date = $("#trades-create-torg-date-input").val();
-                var day_end = $("#trades-create-day-end-input").val();
-                var quotation = $("#trades-create-quotation-input").val();
-                var max_quot = $("#trades-create-max-quot-input").val();
-                var min_quot = $("#trades-create-min-quot-input").val();
-                var num_contr = $("#trades-create-num-contr-input").val();
-                var request = {
-                    "name" : name,
-                    "torg_date" : torg_date,
-                    "day_end" : day_end,
-                    "quotation" : quotation,
-                    "max_quot" : max_quot,
-                    "min_quot" : min_quot,
-                    "num_contr" : num_contr
-                };
-                $.post(
-                    "/polls/trades",
-                    JSON.stringify(request),
-                    function (data, status, jq) {
-                        $("#tradesCreateModal").modal('hide');
-                        tradesTable.ajax.reload();
-                    });
-            });
-
-            $("#trades-delete-ok-button").click(function (e) {
-                var td = $("#trades-table tr.selected td");
-                $.ajax({
-                    "method": "delete",
-                    "url": `/polls/trades/${td[1].innerText}/${td[0].innerText}`,
-                    "success": function() {
-                        $("#tradesDeleteModal").modal('hide');
-                        tradesTable.ajax.reload();
-                    }
-                });
-            });
-
-            $("#trades-edit-button").click(function (e) {
-                var td = $("#trades-table tr.selected td");
-                var name = td[0].innerText;
-                $("#trades-edit-name-input").val(name);
-                $("#trades-edit-original-name").val(name);
-                var torg_date = td[1].innerText;
-                $("#trades-edit-torg-date-input").val(torg_date);
-                $("#trades-edit-original-torg-date").val(torg_date);
-                $("#trades-edit-day-end-input").val(td[2].innerText);
-                $("#trades-edit-quotation-input").val(td[3].innerText);
-                $("#trades-edit-max-quot-input").val(td[4].innerText);
-                $("#trades-edit-min-quot-input").val(td[5].innerText);
-                $("#trades-edit-num-contr-input").val(td[6].innerText);
-            });
-
-            $("#trades-edit-ok-button").click(function (e) {
-                var originalName = $("#trades-edit-original-name").val();
-                var originalDate = $("#trades-edit-original-torg-date").val();
-                var name = $("#trades-edit-name-input").val();
-                var torg_date = $("#trades-edit-torg-date-input").val();
-                var day_end = $("#trades-edit-day-end-input").val();
-                var quotation = $("#trades-edit-quotation-input").val();
-                var max_quot = $("#trades-edit-max-quot-input").val();
-                var min_quot = $("#trades-edit-min-quot-input").val();
-                var num_contr = $("#trades-edit-num-contr-input").val();
-                var request = {
-                    "name" : name,
-                    "torg_date" : torg_date,
-                    "day_end" : day_end,
-                    "quotation" : quotation,
-                    "max_quot" : max_quot,
-                    "min_quot" : min_quot,
-                    "num_contr" : num_contr
-                };
-                $.ajax({
-                    "method": "put",
-                    "url": "/polls/trades/" + originalDate + "/" + originalName,
-                    "data": JSON.stringify(request),
-                    "success": function() {
-                        $("#tradesEditModal").modal('hide');
-                        tradesTable.ajax.reload();
-                    }
-                });
-            });
-
-            var attachTextFilter = function (filterId, table, tableTag, columnIndex) {
-                var filter = $('#' + filterId);
-                filter.keyup(function() {
-                    table.draw();
-                });
-                $.fn.dataTable.ext.search.push(
-                    function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
-                            return true;
-                        }
-
-                        return (data[columnIndex] || "").includes(filter.val());
-                    }
-                    );
-                return filter;
-            };
-
-            var attachDateFilter = function (filterBaseId, table, tableTag, columnIndex) {
-                var filterFrom = $('#' + filterBaseId + '-from');
-                var filterTo = $('#' + filterBaseId + '-to');
-                filterFrom.change(function() { table.draw(); });
-                filterTo.change(function() { table.draw(); });
-                $.fn.dataTable.ext.search.push(
-                    function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
-                            return true;
-                        }
-
-                        var item = Date.parse(data[columnIndex]);
-
-                        var from = Date.parse(filterFrom.val());
-                        if (from && (item < from)) {
-                            return false;
-                        }
-
-                        var to = Date.parse(filterTo.val());
-                        if (to && (to < item)) {
-                            return false;
-                        }
-
-                        return true;
-                    });
-            };
-
-            var attachRangeFilter = function (filterBaseId, table, tableTag, columnIndex) {
-                var filterFrom = $('#' + filterBaseId + '-from');
-                var filterTo = $('#' + filterBaseId + '-to');
-
-                filterFrom.on('change keyup clear', function() { table.draw(); });
-                filterTo.on('change keyup clear', function() { table.draw(); });
-                
-                $.fn.dataTable.ext.search.push(
-                    function(settings, data, dataIndex) {
-                        if (settings.tag && (settings.tag != tableTag)) {
-                            return true;
-                        }
-
-                        var item = parseFloat(data[columnIndex]);
-
-                        var from = parseFloat(filterFrom.val());
-                        if (from && (item < from)) {
-                            return false;
-                        }
-
-                        var to = parseFloat(filterTo.val());
-                        if (to && (to < item)) {
-                            return false;
-                        }
-
-                        return true;
-                    });
-            };
-            
-            //futures filtres
-            var futuresNameFilter = attachTextFilter('futures-name-filter', futuresTable, "futures", 0);
-            var futuresCodeFilter = attachTextFilter('futures-code-filter', futuresTable, "futures", 1);
-            attachDateFilter('futures-date-filter', futuresTable, "futures", 2);
-            //trades filtres
-            var tradesNameFilter = attachTextFilter('trades-name-filter', tradesTable, "trades", 0);
-            attachDateFilter('trades-date-filter', tradesTable, "trades", 1);
-            attachDateFilter('trades-expiration-filter', tradesTable, "trades", 2);
-            attachRangeFilter('trades-quotation-filter', tradesTable, "trades", 3);
-            attachRangeFilter('trades-min-quot-filter', tradesTable, "trades", 4);
-            attachRangeFilter('trades-max-quot-filter', tradesTable, "trades", 5);
-            attachRangeFilter('trades-quantity-filter', tradesTable, "trades", 6);
-        });
-
-$(function(){
-    var hash = window.location.hash;
-    hash && $('ul.nav a[href="' + hash + '"]').tab('show');
-
-    $('.nav-pills a').click(function (e) {
-        $(this).tab('show');
-        var scrollmem = $('body').scrollTop() || $('html').scrollTop();
-        window.location.hash = this.hash;
-        $('html,body').scrollTop(scrollmem);
-    });
-});
+    <script type="text/javascript" src="script.js">
+        
 </script>
 </body>
 </html>
