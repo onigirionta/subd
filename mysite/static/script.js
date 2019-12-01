@@ -1,25 +1,29 @@
-var autoComplete = function(id){
+var autoComplete = function(id, fancy, defaultValue, defaultText) {
+    var combo = $(id);
     $.ajax({
         method: "GET",
         url: "/polls/futures",
-        success: function(ajax) {
-            ajax = JSON.parse(ajax);
-            var combo = $(id);
+        success: function (ajaxData) {
+            var ajax = JSON.parse(ajaxData);
             combo.empty();
             for (var i = 0; i < ajax.data.length; i++) {
                 var name = ajax.data[i].pk;
                 $(`<option value="${name}">${name}</option>`).appendTo(combo);
             }
-            combo.selectize({
-                selectOnTab: true
-            });
+            if (fancy) {
+                combo.selectize({
+                    selectOnTab: true
+                });
+            }
+            if (defaultText) {
+                $(`<option value="${defaultValue}" selected="true">${defaultText}</option>`).prependTo(combo);
+            }
         }
     });
 };
 
-
 $(document).ready(function () {
-    autoComplete("#trades-name-filter");
+    autoComplete('#trades-name-filter', false, '', '(любой)');
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
     });
@@ -441,7 +445,7 @@ $(document).ready(function () {
      //trades-buttons-functions
     $("#trades-create-button").click(function (e) {
         $("#trades-create-alert").hide();
-        autoComplete("#trades-create-name-input");
+        autoComplete("#trades-create-name-input", true);
     });
 
     $("#trades-create-ok-button").click(function (e) {
@@ -495,7 +499,7 @@ $(document).ready(function () {
 
         var name = td[0].innerText;
         var torg_date = td[1].innerText;
-        autoComplete("#trades-edit-name-input");
+        autoComplete("#trades-edit-name-input", true);
 
         $("#trades-edit-name-input").val(name);
         $("#trades-edit-original-name").val(name);
